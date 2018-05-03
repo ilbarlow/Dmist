@@ -147,7 +147,7 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
         Scaled2{e,6} = NaN(max(nFish(e,:)), size(sleeplength_d{e},2));
         Scaled2{e,7} = NaN(max(nFish(e,:)), size(wactivity_d{e},2));
         Scaled2 {e,8} = NaN(max(nFish(e,:)), size(wactivity_n{e}, 2));
-        for g=1:size(sleepStructure(e).geno.data,2) %every genotype is a column in the matrix(WT=1, het=2, Hom=3)
+        for g=1:size(all(e).geno.data,2) %every genotype is a column in the matrix(WT=1, het=2, Hom=3)
             Scaled2 {e,1} (:,g) = (norm_sleep_d{e}(:,g)-nanmean(norm_sleep_d{e}(:,ControlPos)))/... %day norm_sleep
               nanmean(norm_sleep_d{e}(:,ControlPos));
             Scaled2 {e,2} (:,g) = (norm_sleep_n{e}(:,g)-nanmean(norm_sleep_n{e}(:,ControlPos)))/...%night norm_sleep
@@ -165,7 +165,7 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
             Scaled2{e,8}(:,g)=(norm_wactivity_n{e}(:,g)-nanmean(norm_wactivity_n{e}(:,ControlPos)))/...
               nanmean(norm_wactivity_n{e}(:,ControlPos));
         end 
-    end  
+        
             %make final cell array that contains scaled data for day sleep, and sleep
     %bout length, and non-scaled for the rest
     for e=1:size(sleepStructure,2);
@@ -180,15 +180,6 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
     end
 
 
-        %now find means and sem devs for plotting experiments as errorbars
-    final_Scaled_mean = cell(size(sleepStructure,2));
-    final_Scaled_sem = cell(size(sleepStructure,2));
-    for e=1:size(sleepStructure,2) %every experiment
-        for p=1:size (final_Scaled,2)
-            final_Scaled_mean{e}(:,p) = nanmean (final_Scaled{e,p})';
-            final_Scaled_sem{e}(:,p) =((nanstd(final_Scaled{e,p}))./...
-                (sqrt(sum(~isnan(final_Scaled{e,p})))))';
-        end
     end
 
 end
