@@ -29,7 +29,7 @@ function Summary_Act(folder, saveDir, names, ControlPos, cmap)
     %list the files to load
     files =dir2(folder);
     
-    nConditions = size(names,1);
+    nConditions = size(names,2);
     
     %load the workspaces
     %now load the .mat files - top file is .DS_store hidden file
@@ -538,8 +538,8 @@ Scaled_act_allsem = NaN(3,6);
     for i=1:size(mult,2)
        text(i-0.25, -20, strcat('P=', num2str(mult{i}(2,6))), 'Fontsize', 14) 
     end
-    print(fullfile(saveDir, 'Day_transitions_Final'), '-depsc', '-tiff')
-    savefig(fullfile(saveDir, 'Day_transitions_Final.fig'));
+    print(fullfile(saveDir, 'SummaryAct'), '-depsc', '-tiff')
+    savefig(fullfile(saveDir, 'SummaryAct.fig'));
     close;
     
     

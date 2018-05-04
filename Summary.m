@@ -10,7 +10,7 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
     
     %3. names - the names of the groups (eg WT, hom)
     
-    %4. ControlPos
+    %4. ControlPos - location of WT controls
     
     %5. cmap - color map to use for making the figures
     
@@ -178,17 +178,76 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
        final_Scaled{e,7} = Scaled{e,7}; %day waking activity
        final_Scaled{e,8} = Scaled{e,8}; %night waking activity
     end
-
-
-        %now find means and sem devs for plotting experiments as errorbars
-    final_Scaled_mean = cell(size(sleepStructure,2));
-    final_Scaled_sem = cell(size(sleepStructure,2));
-    for e=1:size(sleepStructure,2) %every experiment
-        for p=1:size (final_Scaled,2)
-            final_Scaled_mean{e}(:,p) = nanmean (final_Scaled{e,p})';
-            final_Scaled_sem{e}(:,p) =((nanstd(final_Scaled{e,p}))./...
-                (sqrt(sum(~isnan(final_Scaled{e,p})))))';
-        end
+    
+        %% now can combine data to see what comes out
+    %vertcat these cell arrays to combine all experiments and then find
+    %mean and sem
+    final_Scaled_all = cell(1,size(Scaled2,2));
+    final_Scaled_allmean = cell(1,size(Scaled2,2));
+    final_Scaled_allsem = cell(1,size(Scaled2,2));
+    for p = 1:size(final_Scaled,2) %every parameter
+        final_Scaled_all{p} = vertcat(cell2mat(final_Scaled(:,p))); %concatenate matrices
+        final_Scaled_allmean{p} = nanmean(final_Scaled_all{p})'; %find average
+        final_Scaled_allsem{p} = (nanstd(final_Scaled_all{p})./...
+            (sqrt(sum(~isnan(final_Scaled_all{p})))))';
     end
+    
+    %concatenate
+    final_Scaled_allmean = cell2mat(final_Scaled_allmean);
+    final_Scaled_allsem =cell2mat(final_Scaled_allsem);
 
+    %do stats on final_Scaled_all
+    for p=1:size(final_Scaled_all,1) %every parameter
+        [P(p), tbl, stats]= kruskalwallis (final_Scaled_all{p}, [], 'off');
+        mult {p} = multcompare(stats);
+        close;
+    end
+    
+    %now plot as errorbar
+        %make legend first
+    %make cell array for legend
+    Leg = cell(size(nFish,2),1);
+    for g = 1:size(nFish,2)
+       Leg{g} = strcat(names{g}, ', n=', num2str(sum(nFish(:,g)))); 
+    end
+    
+    figure;
+    for i=1.5:2:8.5
+        rectangle ('Position', [i -60 1 120], 'Facecolor', [0.95 0.95 0.95], 'Edgecolor', [1 1 1]);
+        hold on;
+        rectangle ('Position', [i+1 -60 1 120], 'Facecolor', [1 1 1], 'Edgecolor', [1 1 1]);
+    end
+    for g=1:size(names,2) %every genotype
+        errorbar(final_Scaled_allmean(g,:)*100, final_Scaled_allsem(g,:)*100, 'o', 'Color', ...
+            cmap(g,:), 'Markerfacecolor', cmap(g,:), 'Linewidth', 2);
+        hold on
+    end
+    box off;
+    xlim ([0.5 8.5]);
+    ylim([-40 40]);
+    ax=gca;
+    ax.XTick = [1.5:2:7.5];
+    ax.XTickLabel = {'Sleep' 'Sleep Bouts' 'Sleep bout length' 'Waking Activity'};
+    ax.XTickLabelRotation = 45;
+    ax.FontSize = 16;
+    ax.YTick = [-40:10:40];
+    ylabel ('% Change relative to WT', 'FontSize', 16);
+    legend (Leg, 'FontSize', 18);
+    %plot stats on top
+    for i=1:size(mult,2)
+      text(i-0.25, -20, strcat('P=', num2str(mult{i}(2,6))), 'Fontsize', 14) 
+    end
+    print(fullfile(saveDir, 'Summary'), '-depsc', '-tiff')
+    savefig(fullfile(saveDir, 'Summary.fig'));
+    close;
+    
+    clear e f g h i
+    
+    %save the stats to an excel spreadsheet
+    features ={'Sleep_D' 'Sleep_N' 'SleepBoutD' 'SleepBoutN' 'Sleepboutlength_d'...
+        'SleepboutLength_N' 'WactivityD' 'WactivityN' }
+    for p = 1:size(mult,2)
+        xlswrite(fullfile(saveDir, 'summary_combi.xls'), mult{p}, features{p}) 
+    end
+    
 end
