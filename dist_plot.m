@@ -32,7 +32,7 @@ for s=1:no_subplots
         h{2}(1).LineWidth = 3;
         h{2}(1).Color = [0.5 0.5 0.5];
         ylim ([0 1]);  
-        text(2, 1, num2str(stats(s,3)))   
+        text(2, 1, num2str(stats(3,s)))   
         ylabel ('Probability of transition', 'Fontsize', 12)  
 end
 print(filename, '-depsc', '-tiff')
