@@ -1,4 +1,4 @@
-function StateTransitions (folder, saveDir,names, cmap)
+function StateTransitions (folder, saveDir,names, ControlPos, cmap)
 %This function performs K-means clustering on the day and night day and
 % night activity values, separately. The activity of each fish is scaled by
 % its max and min before clustering. Distortion is used to determine the
@@ -23,7 +23,6 @@ function StateTransitions (folder, saveDir,names, cmap)
 %Outputs:
     %
 
-clear all
 %list the files to load
     files =dir2(folder);
     
@@ -46,7 +45,7 @@ clear all
     wake_day = cell(size(LB,2), nConditions);
     wake_night = cell(size(LB,2), nConditions);
     for e = 1:size(sleepStructure,2)    
-        for j = 1:nConditions %WT = 3, Het = 2, Hom = 1 (genotype)
+        for j = 1:nConditions %genotypes group
             wake_day{e,j}(:,:,1) = sleepStructure(e).geno.avewaking{j}(LB(3,e):LB(4,e),:); %day 5 from LB matrix
             wake_day {e,j} (:,:,2) = sleepStructure(e).geno.avewaking{j}(LB(5,e):LB(6,e),:); %day 6
             wake_night {e,j} (:,:,1) = sleepStructure(e).geno.avewaking{j}(LB(2,e):LB(3,e),:); %night 5
@@ -54,7 +53,8 @@ clear all
         end
     end
     clear e i j
-
+    
+   
     %find then number of fish in each experiment and condition
     nFish = NaN(size(wake_day));
     for e =1:size(sleepStructure,2)
@@ -63,6 +63,14 @@ clear all
         end
     end
     
+     %flip groups if WT is not group 3
+    if ControlPos ~= 1
+        names = fliplr(names)
+        wake_day = fliplr(wake_day)
+        wake_night= fliplr (wake_night)
+        nFish = fliplr(nFish)
+        cmap = flip(cmap);
+    end
     
     % filter set so that any minute with <0.1 sec min^-1 activity is counted as
     % inactivity
@@ -181,7 +189,7 @@ clear all
     figure;
     h1=shadedErrorBar_2(1:size(distortionPercent{1,3},1), ...
         nanmean(cell2mat(distortionPercent(:,3)'),2), ...
-        nanstd(cell2mat(distortionPercent(:,3)'),2), {'color', 'b'});
+        nanstd(cell2mat(distortionPercent(:,3)')'), {'color', 'b'});
     hold on;
     h2=stem (K(1), 1, 'b*', 'linewidth', 2);
     legend ([h1.patch], strcat('N=', num2str(size(KD,1))))
@@ -215,9 +223,9 @@ clear all
             
             for i=1:10 %try 10 clusters for each experiment - this can be changed
 
-                [~,~, SUMD] = kmeans(X,i, 'emptyaction', 'drop'); %calculate K-means
+                [~,~, SUMD] = kmeans(X,i, 'emptyaction', 'drop', 'Replicates', 10); %calculate K-means
 
-                distortion (i)= nansum (SUMD); %calculate sum of squares
+                distortion (i)= nansum (SUMD); %calculate cost function for each K
 
              end
 
@@ -239,10 +247,10 @@ clear all
     figure;
     h1=shadedErrorBar_2(1:size(distortionPercent{1,3},1), ...
         nanmean(cell2mat(distortionPercent(:,3)'),2), ...
-        nanstd(cell2mat(distortionPercent(:,3)'),2), {'color', 'k'});
+        nanstd(cell2mat(distortionPercent(:,3)')'), {'color', 'k'});
     hold on;
     h2=stem (K(1), 1, 'k*', 'linewidth', 2);
-    legend ([h1.patch], 'N=5')
+    legend ([h1.patch], strcat('N=', num2str(size(KD,1))))
     ylabel ('Variance Explained');
     xlabel ('Number of clusters');
     box off;
@@ -456,7 +464,7 @@ clear all
 
                     x= ClusterRefsD2{e,g,d}(:,f); %make a vector of the fish both night only 
 
-                    m = max(max(ClusterRefsD2{e,d,g})); %5 possible states 
+                    m = K(1)+1; %5 possible states 
 
                     n = numel(x); %number of time points
 
@@ -490,7 +498,7 @@ clear all
 
                     x= ClusterRefsN2{e,g,d}(:,f); %make a vector of the fish night only 
 
-                    m = max(max(ClusterRefsN2{e,d,g})); %5 possible states
+                    m = K(2)+1; %5 possible states
 
                     n = numel(x); %number of time points
 
@@ -582,7 +590,7 @@ clear all
     stateAllD = cell(K(1)+1, size(ClusterRefsD2,3));
     stateAllN = cell(K(2)+1, size(ClusterRefsN2, 3));
     for s=1:max(K)+1 %every state, including sleep
-        for d=1:size(ClusterRefsD2,2)
+        for d=1:size(ClusterRefsD2,3) %every day
             stateAllN{s,d} = cell2mat(vertcat(stateProbN(:,s,d)));
             stateAllD{s,d} = cell2mat(vertcat(stateProbD(:,s,d)));
         end
@@ -594,7 +602,7 @@ clear all
     %set grouping variables for experiment and genotype
     
     %genotype
-    ns = max(sum(nFish))*size(sleepStructure,2); %Total number of fish including NaNs
+    ns = sum(max(nFish'))*size(nFish,2); %Total number of fish including NaNs
     group =[]; %condition
     for i=1:size(nFish,2) %every condition
         group2 (1:ns/size(nFish,2),1) = i;
@@ -611,7 +619,7 @@ clear all
     for e=1:size(nsExp,2)-1
        exp(nsExp(e): nsExp(e+1))=e; 
     end
-    exp = repmat (exp, 1, size(sleepStructure,2));
+    exp = repmat (exp, 1, size(nFish,2)); %repeat by number of conditions
 
     % do n-way ANOVA to test if difference between experiments
     clear pd pn
@@ -622,7 +630,6 @@ clear all
 
             [pd{s}(:,d),~, stats] = anovan(stateAllD{s,d}(:),...
                 {exp, group}, 'model', 'interaction', 'display', 'off');
-            multcompare(stats)
             [pn{s}(:,d),~, stats] = anovan(stateAllN{s,d}(:),...
                 {exp, group}, 'model', 'interaction', 'display', 'off');
         end
@@ -692,7 +699,7 @@ clear all
 
     %% now make the figures
     dist_plot(stateAllD, size(pd2,2), cmap, names, pd2, fullfile(saveDir, 'dayTransitions'))
-    dist_plot(stateAllN, size(pn2,2), cmap, names, pd2, fullfile(saveDir, 'nightTransitions'))
+    dist_plot(stateAllN, size(pn2,2), cmap, names, pn2, fullfile(saveDir, 'nightTransitions'))
     
     %% final part is to look at the timeseries across days and nights
     %to allow statistical comparisons
@@ -772,7 +779,7 @@ clear all
     concatTransitionPlotD = cell(size(transitionD,3),1);
     for d = 1:size(concatTransitionPlotN,1)
        concatTransitionPlotN{d} = scrap(:,(4*d)-(d+2):(4*d)-d,:);
-       concatTransitionPlotD{g} = temp(:,(4*d) - (d+2):(4*d)-d,:);
+       concatTransitionPlotD{d} = temp(:,(4*d) - (d+2):(4*d)-d,:);
     end
     clear scrap temp
 
@@ -787,7 +794,7 @@ clear all
                 [], 'off');
             pn5 {s,d} = multcompare(stats);
             clear stats
-            [pd4(s,d), tbl,stats] = kruskalwallis(concatTransitionPlotD{d}(:,:,s),...
+            [pd4(s,d), ~,stats] = kruskalwallis(concatTransitionPlotD{d}(:,:,s),...
                 [],'off');
             pd5 {s,d} = multcompare(stats);
             clear stats

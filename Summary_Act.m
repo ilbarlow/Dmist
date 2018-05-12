@@ -452,9 +452,21 @@ function Summary_Act(folder, saveDir, names, ControlPos, cmap)
         end
     end
 
+    %now find mean and sem for figure of separate experiments
+    Scaled_act_mean = cell(size(sleepStructure,2),1);
+    Scaled_act_sem = cell(size(sleepStructure,2),1);
+    for e=1:size(sleepStructure,2) %every experiment
+       for p=1:size(Scaled_act,2) %each parameter
+          Scaled_act_mean{e}(:,p) = nanmean(Scaled_act{e,p})'; %every row is a
+            %different genotype, every column is a parameter
+          Scaled_act_sem{e} (:,p) = (nanstd(Scaled_act{e,p})')./ ...
+              (sqrt(sum(~isnan(Scaled_act{e,p})))'); %sem
+       end
+    end
+    
     %%plots
     
-    for e=1:size(all,2)
+    for e=1:size(sleepStructure,2)
         figure;
         for i=1.5:2:6.5
             rectangle ('Position', [i -60 1 120], 'Facecolor', [0.95 0.95 0.95], 'Edgecolor', [1 1 1]);
@@ -481,9 +493,9 @@ function Summary_Act(folder, saveDir, names, ControlPos, cmap)
     end
     %%
     %now concanenate experiments for each parameter separately
-Scaled_act_all = cell(6);
-Scaled_act_allmean = NaN(3,6);
-Scaled_act_allsem = NaN(3,6);
+    Scaled_act_all = cell(6);
+    Scaled_act_allmean = NaN(size(nFish,2),6);
+    Scaled_act_allsem = NaN(size(nFish,2),6);
     for p=1:size(Scaled_act,2) %every parameter, every row a genotype
    
         Scaled_act_all {p} = cell2mat(Scaled_act(:,p)); %concatenate

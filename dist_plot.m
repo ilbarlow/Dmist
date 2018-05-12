@@ -19,7 +19,7 @@ function dist_plot(state_trans, no_subplots, cmap, labels, stats, filename)
   
   %Output:
     %.eps an .fig saved into assigned folder
-
+figure;
 for s=1:no_subplots
         subplot (1,5,s)
         title (num2str(s-1))  
