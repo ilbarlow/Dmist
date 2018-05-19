@@ -811,7 +811,7 @@ function StateTransitions (folder, saveDir,names, ControlPos, cmap)
     
     %now export these as spreadsheets
     Days = {'Day1' 'Day2' 'Day3'}
-    for d = 1:size(allTransD,2)
+    for d = 1:size(allTransD,1)
         xlswrite(fullfile(saveDir, 'DayTransitionsMedian.xls'), allTransD{d}, Days{d});
         xlswrite(fullfile(saveDir, 'NightTransitionsMedian.xls'), allTransN{d}, Days{d});
     end

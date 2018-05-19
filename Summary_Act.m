@@ -538,7 +538,7 @@ function Summary_Act(folder, saveDir, names, ControlPos, cmap)
     box off
     ax=gca;
     ax.XTick = [1.5:2:5.5]
-    ax.XTickLabel = {'Activity bout length' 'Number of active bouts' 'Waking Activity'};
+    ax.XTickLabel = {'Activity bout length' 'Active bouts' 'Waking Activity'};
     ax.XTickLabelRotation = 45;
     ax.FontSize = 16
     xlim ([0.5 6.5])
