@@ -743,31 +743,18 @@ function StateTransitions (folder, saveDir,names, ControlPos, cmap)
         %Day
     imagesc(heat);
     colormap(custom);
-    %lim = caxis;
+    lim = caxis;
     caxis([0 0.4])
     set(gca, 'XTick', [round(nConditions/2):nConditions:size(heat,2)], 'XTickLabel',...
         [1 2 3 4 5], 'YTick', [1 2], 'YTickLabel', {'Day' 'Night'})
     colorbar;
-    rn = find(pn2(3,:)<0.05);
-    rd = find(pd2(3,:)<0.05);
-    if isempty(rn) == 0
-        for i =1:size(rn,2)
-            text((rn(i) * nConditions)-1,2, num2str(round(pn2(3,rn(i)),3)),...
-                'HorizontalAlignment', 'center');         
-        end
+    [rn,cn] = find(pn2(:,3)<0.05);
+    for i =1:rn
+        text(        
     end
-    if isempty(rd) == 0
-        for i =1:size(rd,1)
-            text((rd(i) * nConditions)-1, 1, num2str(round(pd2(3,rd(i)),3)),...
-                'HorizontalAlignment', 'center'); 
-        end
-    end
+    
     box off
-    savefig(fullfile(saveDir, 'HeatMap.fig'));
-    print(fullfile(saveDir, 'HeatMap'), '-dsvg');
-    print(fullfile(saveDir, 'HeatMap'), '-dtiff');
-    
-    
+     
     %% final part is to look at the timeseries across days and nights
     %to allow statistical comparisons
     
