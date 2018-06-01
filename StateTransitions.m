@@ -702,10 +702,10 @@ function StateTransitions (folder, saveDir,names, ControlPos, cmap)
     dist_plot(stateAllN, size(pn2,2), cmap, names, pn2, fullfile(saveDir, 'nightTransitions'))
     
     %make heatmap figure
-    heatDmed = NaN(size(stateAllD,1),3);
-    heatNmed = NaN(size(stateAllN,1),3);
-    heatDm = NaN(size(stateAllD,1),3);
-    heatNm = NaN(size(stateAllN,1),3);
+    heatDmed = NaN(size(stateAllD,1),nConditions);
+    heatNmed = NaN(size(stateAllN,1),nConditions);
+    heatDm = NaN(size(stateAllD,1),nConditions);
+    heatNm = NaN(size(stateAllN,1),nConditions);
     for i = 1:size(stateAllD,1)
         heatDmed(i,:) = nanmedian(stateAllD{i,3},1);
         heatNmed (i,:) = nanmedian(stateAllN{i,3},1);
@@ -733,7 +733,9 @@ function StateTransitions (folder, saveDir,names, ControlPos, cmap)
     %custom colorscheme
     custom = interp1([1 128 129 256], [0.56 0.0039 0.3216; 1 1 1;...
     1 1 1; 0.15 0.56 0.15], 1:256);
-    
+    nyidalur=interp1([1 128 129 256],[1 0 1; .2559 .248 .2559; .248 .2559 .248; 0 1 0],1:256);
+
+
     %make figure
     fig = figure;
     fig.Units= 'centimeters';

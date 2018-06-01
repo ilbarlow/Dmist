@@ -266,7 +266,7 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
     %save the stats to an excel spreadsheet
     features ={'Sleep_D' 'Sleep_N' 'SleepBoutD' 'SleepBoutN' 'Sleepboutlength_d'...
         'SleepboutLength_N' 'WactivityD' 'WactivityN' }
-    for p = 1:size(mult,2)
+    for p = 1:size(mult,1)
         xlswrite(fullfile(saveDir, 'summary_combi.xls'), mult{p}, features{p}) 
     end
     
