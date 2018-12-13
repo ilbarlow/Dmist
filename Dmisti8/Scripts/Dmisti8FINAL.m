@@ -35,7 +35,7 @@ ClusterExplanation(foldir, saveDiri8, namesi82, ControlPosi8);
 
 
 %% LL 
-clearvars -except cmapi8 namesi8 ControlPosi8 namesi82
+clearvars -except cmapi8 namesi8 ControlPosi8 namesi82 ymaxD ymaxN
 
 foldir = uigetdir('', 'Select sleep.mat data folder');
 
@@ -48,7 +48,7 @@ Summary (foldir, saveDiri8, namesi8, ControlPosi8, cmapi8)
 Summary_Act(foldir, saveDiri8, namesi8, ControlPosi8, cmapi8)
 
 %State transitions
-StateTransitions (foldir, saveDiri8, namesi8, ControlPosi8, cmapi8)
+StateTransitions (foldir, saveDiri8, namesi8, ControlPosi8, cmapi8, ymaxD, ymaxN);
 
 %Cluster explanation
 ClusterExplanation(foldir, saveDiri8, namesi82, ControlPosi8);
@@ -61,6 +61,9 @@ foldir = uigetdir('', 'Select sleep.mat data folder');
 
 saveDiri8 = uigetdir('', 'Select folder to save figures');
 
+ymaxD = [0.8 0.6 0.6 0.6 0.6];
+ymaxN = [1 0.6 0.6 0.6 0.6];
+
 %Summary figures
 Summary (foldir, saveDiri8, namesi8, ControlPosi8, cmapi8)
 
@@ -68,7 +71,7 @@ Summary (foldir, saveDiri8, namesi8, ControlPosi8, cmapi8)
 Summary_Act(foldir, saveDiri8, namesi8, ControlPosi8, cmapi8)
 
 %State transitions
-StateTransitions (foldir, saveDiri8, namesi8, ControlPosi8, cmapi8)
+StateTransitions (foldir, saveDiri8, namesi8, ControlPosi8, cmapi8, ymaxD, ymaxN)
 
 %Cluster Explanation
 ClusterExplanation(foldir, saveDiri8, namesi82, ControlPosi8);

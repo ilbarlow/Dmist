@@ -12,6 +12,10 @@ ControlPosVir =1;
 
 cmapVir = [0 0 0; 0 0 1; 1 0 0]; % Black = WT; Blue = Het; Red = Hom
 
+ymaxD = [0.6 0.6 0.6 0.6 0.6];
+
+ymaxN = [0.8 0.6 0.6 0.6 0.6];
+
 %Summary figures
 Summary (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 
@@ -19,7 +23,7 @@ Summary (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 Summary_Act(foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 
 %State transitions
-StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
+StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir, ymaxD, ymaxN)
 
 %make new names file for Vir
 namesVir2 = {'WT' 'HET' 'HOM'};
@@ -29,7 +33,7 @@ ClusterExplanation(foldir, saveDirVir, namesVir2, ControlPosVir);
 
 
 %% LL
-clearvars -except cmapVir ControlPosVir namesVir namesVir2
+clearvars -except cmapVir ControlPosVir namesVir namesVir2 ymaxD ymaxN
 
 foldir = uigetdir('', 'Select sleep.mat data folder');
 
@@ -42,7 +46,7 @@ Summary (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 Summary_Act(foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 
 %State transitions
-StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
+StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir, ymaxD, ymaxN)
 
 %Cluster explanation
 ClusterExplanation(foldir, saveDirVir, namesVir2, ControlPosVir);
@@ -54,6 +58,9 @@ foldir = uigetdir('', 'Select sleep.mat data folder');
 
 saveDirVir = uigetdir('', 'Select folder to save figures');
 
+ymaxD = [0.8 0.6 0.6 0.6 0.6];
+ymaxN = [1 0.6 0.6 0.6 0.6];
+
 %Summary figures
 Summary (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 
@@ -61,7 +68,7 @@ Summary (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 Summary_Act(foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 
 %State transitions
-StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
+StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir, ymaxD, ymaxN)
 
 %Cluster explanation
 ClusterExplanation(foldir, saveDirVir, namesVir2, ControlPosVir);
