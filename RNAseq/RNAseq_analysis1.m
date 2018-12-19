@@ -15,7 +15,7 @@ chromosome = table2array(data(:,15));
 var_names = data.Properties.VariableNames;
 
 %filter the data to remove genes with expression below 2 standard
-%deviations of average across all genes
+%deviations of average across all genes in all genotypes
 
 %find cutoff value
 figure;
@@ -41,14 +41,14 @@ end
 %index out
 reads2 = reshape(reads(logical(to_exclude)), [], size(reads,2));
 genes2 = genes(logical(to_exclude(:,1)));
+chromosome2 = chromosome(logical(to_exclude(:,1)));
+description2 = description(logical(to_exclude(:,1)));
 
 %calculate zscore
-dataZ = zscore(reads, [], 2);
-
+dataZ = zscore(reads2, [], 2);
 
 %need to impute nan values before doing the PCA
     %no NaNs in the data
-
 [coeff,score,latent,tsquared,explained,mu] = pca(dataZ);
 
 %plot the first two PCs
@@ -80,10 +80,9 @@ print(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PCvarExplained')
 savefig(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PCvarExplained.fig'))
 saveas(gcf, fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PCvarExplained'), 'tiff')
 
-
 %find row containing dmist 
-for i =1:size(genes,1)
-   if strfind('ENSDARG00000095754', genes{i}) == 1
+for i =1:size(genes2,1)
+   if strfind('ENSDARG00000095754', genes2{i}) == 1
        dmist = i;
    end
 end
@@ -226,69 +225,311 @@ print(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PC2'), '-depsc',
 savefig(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PC2.fig'))
 saveas(gcf, fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PC2'), 'tiff')
 
+%and PC3
+PC3coffs (:,1) = coeff(1:3,3); %i8 wt
+PC3coffs(:,2) = coeff(4:6,3); %i8 hom
+PC3coffs (:,3) = coeff(7:9,3); %vir wt
+PC3coffs(:,4) = coeff(10:12,3); %vir hom
+%first do the stats
+[P,T,STATS,TERMS] = anovan(PC3coffs(:), { background, geno}, 'model', 'interaction', 'display', 'off');
+
+%set a colormap for these plots
+cmap = [0 0 0; 1 0 1; 0.5 0.5 0.5; 1 0 0];
+%plot this
+figure;
+h=plotSpread(PC3coffs, 'distributionColors', cmap, 'showMM', 2);
+ax=gca;   
+ax.XTickLabel ={var_names{2}, var_names{5}, var_names{8}, var_names{11}};
+ax.XTickLabelRotation = 45;   
+ax.FontSize = 14;
+set(findall(gca, 'type', 'line'), 'markersize', 16) 
+h{2}(1).LineWidth = 2;
+h{2}(1).Color = [0.8 0.8 0.8];
+h{2}.MarkerSize = 8
+ylabel ('PC2 score', 'Fontsize', 12) 
+ylim([-0.8 0.8]);
+hold on;
+text(0.5,0.6,strcat('bgd interaction, p= ', num2str(P(1))));
+text(2,0.6, strcat('geno interaction, p= ', num2str(P(2))));
+text(4,0.6, strcat('bgd*geno interaction, p= ' , num2str(P(3))));
+print(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PC3'), '-depsc', '-tiff')
+savefig(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PC3.fig'))
+saveas(gcf, fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PC3'), 'tiff')
+%%
 %which genes contribute the most to PC1 and PC2
-[B,I] = sort(score(:,1));
+[B,I] = sort(score(:,1).^2);
 I = flip (I);
 B = flip (B);
 
 %top_genes
-top_PC1 = description(I(1:50))
-topPC1_chromosome= chromosome(I(1:50));
+rankPC1 = description2(I(1:10000));
+rankPC1_chromosome= chromosome2(I(1:10000));
+rankPC1_genes = genes2(I(1:10000));
 
 %for PC2
-[B2,I2] = sort(score(:,2))
-I2 = flip (I2)
-B2 = flip (B2)
+[B2,I2] = sort(score(:,2).^2)
+I2 = flip (I2);
+B2 = flip (B2);
 
 %top_genes
-top_PC2 = description(I2(1:50))
-top_PC2chr = chromosome(I2(1:50));
+rankPC2 = description2(I2(1:10000));
+rankPC2_chr = chromosome2(I2(1:10000));
+rankPC2_genes = genes2(I2(1:10000));
 
-%also try PCA on just the i8 dataset
-data_i8 = reads(:,1:6);
-data_i8z = zscore(data_i8,[], 2);
+%import Eirinn's stats results
+statsresultsWTcomp = 'C:\Users\ilbar\Documents\MATLAB\RNAseq\RNAseq\DESeq-i8wtVSvirwt-3rdattempt.significant.txt'
+statsresultsHomcomp = 'C:\Users\ilbar\Documents\MATLAB\RNAseq\RNAseq\DESeq-i8homVSvirhom-3rdattempt.significant.txt'
 
-[coeff_i8,score_i8,latent,tsquared,explained,mu] = pca(data_i8z);
+dataStatsWT = readtable(statsresultsWTcomp,'Delimiter', '\t');
+dataStatsHOM = readtable (statsresultsHomcomp, 'Delimiter', '\t');
 
-figure;
-clf;
-scatter(coeff_i8(1:3,1), coeff_i8(1:3,2))
-hold on
-scatter(coeff_i8(4:6,1), coeff_i8(4:6,2))
+%now to find the p values of all the genes in PC1 for WTs
+WTsigGenesPC1 = intersect(dataStatsWT.Row_names, rankPC1_genes);
+WTsigGenesPC2 = intersect(dataStatsWT.Row_names, rankPC2_genes);
 
-%also try PCA on just the i8 dataset
-data_vir = reads(:,7:12);
-data_virz = zscore(data_vir,[], 2);
-
-[coeff_vir,score_vir,latent,tsquared,explained,mu] = pca(data_virz);
-
-figure;
-scatter(coeff_vir(1:3,1), coeff_vir(1:3,2))
-hold on
-scatter(coeff_vir(4:6,1), coeff_vir(4:6,2))
-
-
-%% so now do stats
-
-dmisti8hom = NaN()
-dmisti8wt = NaN()
-
-dmisti8wt = reads(:,1:3)';
-dmisti8hom = reads(:,4:6)';
-dmistvirwt = reads(:, 7:9)';
-dmistvirhom = reads(:,10:12)';
-dmisthom_all = vertcat(reads(:,4:6)', reads(:,10:12)');
-dmistwt_all = vertcat(reads(:,1:3)', reads(:,7:9)');
-
-%rank sum test to compare
-pVals = NaN(3, size(dmisti8wt,2));
-for i =1:size(dmisti8wt,2)
-   [~, pVals(1,i)] = ttest(dmisti8hom(:,i), dmisti8wt(:,i));
-   [~, pVals(2,i)] = ttest(dmistvirhom(:,i), dmistvirwt(:,i));
-   [~, pVals(3,i)] = ttest(dmisthom_all(:,i), dmistwt_all(:,i));
+%make a table to export of just the sig genes, score in PC1 and adjusted P
+%value
+GeneT = cell(size(WTsigGenesPC1,1),1);
+nameT = cell(size(WTsigGenesPC1,1),1);
+AdjPv = NaN(size(WTsigGenesPC1,1),1);
+PC1 = NaN(size(WTsigGenesPC1,1),1);
+for i =1:size(WTsigGenesPC1,1)
+   %find intersection 
+   [~,~,ib] = intersect(WTsigGenesPC1{i}, dataStatsWT.Row_names);
+    GeneT {i} =char(dataStatsWT.Row_names(ib));
+    nameT{i} = char(dataStatsWT.name(ib));
+    AdjPv(i) = dataStatsWT.padj(ib);
+    [~,~,ic] = intersect(WTsigGenesPC1{i},rankPC1_genes);
+    PC1 (i)= B(ic);
+    clear ib ic
 end
-    
-%now correct for multiple comparisons
-[pVals_corr, h] = bonf_holm(pVals);
 
-sum(sum(h))
+%make into table to export to excel
+statPC1 = table(GeneT, nameT, AdjPv, PC1);
+WTstatPC1 = sortrows(statPC1, {'PC1'}, {'descend'});
+writetable (statPC1, fullfile(pathname, 'PC1genestatsWT.xlsx'));
+clear GeneT nameT AdjPv PC1 statPC1
+
+%repeat for PC2
+GeneT = cell(size(WTsigGenesPC2,1),1);
+nameT = cell(size(WTsigGenesPC2,1),1);
+AdjPv = NaN(size(WTsigGenesPC2,1),1);
+PC2 = NaN(size(WTsigGenesPC2,1),1);
+for i =1:size(WTsigGenesPC2,1)
+   %find intersection 
+   [~,~,ib] = intersect(WTsigGenesPC2{i}, dataStatsWT.Row_names);
+    GeneT {i} =char(dataStatsWT.Row_names(ib));
+    nameT{i} = char(dataStatsWT.name(ib));
+    AdjPv(i) = dataStatsWT.padj(ib);
+    [~,~,ic] = intersect(WTsigGenesPC2{i},rankPC2_genes);
+    PC2 (i)= B(ic);
+    clear ib ic
+end
+
+%make into table to export to excel
+statPC2 = table(GeneT, nameT, AdjPv, PC2);
+WTstatPC2 = sortrows(statPC2, {'PC2'}, {'descend'});
+writetable (statPC2, fullfile(pathname, 'PC2genestatsWT.xlsx'));
+clear nameT GeneT AdjPv PC2 statPC2
+
+%and for homs
+HOMsigGenesPC1 = intersect(dataStatsHOM.Row_names, rankPC1_genes);
+HOMsigGenesPC2 = intersect(dataStatsHOM.Row_names, rankPC2_genes);
+
+%make a table to export of just the sig genes, score in PC1 and adjusted P
+%value
+GeneT = cell(size(HOMsigGenesPC1,1),1);
+nameT = cell(size(HOMsigGenesPC1,1),1);
+AdjPv = NaN(size(HOMsigGenesPC1,1),1);
+PC1 = NaN(size(HOMsigGenesPC1,1),1);
+for i =1:size(HOMsigGenesPC1,1)
+   %find intersection 
+   [~,~,ib] = intersect(HOMsigGenesPC1{i}, dataStatsHOM.Row_names);
+    GeneT {i} =char(dataStatsHOM.Row_names(ib));
+    nameT{i} = char(dataStatsHOM.name(ib));
+    AdjPv(i) = dataStatsHOM.padj(ib);
+    [~,~,ic] = intersect(HOMsigGenesPC1{i},rankPC1_genes);
+    PC1 (i)= B(ic);
+    clear ib ic
+end
+
+%make into table to export to excel
+statPC1 = table(GeneT, nameT, AdjPv, PC1);
+HOMstatPC1 = sortrows(statPC1, {'PC1'}, {'descend'});
+writetable (statPC1, fullfile(pathname, 'PC1genestatsHOM.xlsx'));
+clear GeneT nameT AdjPv PC1 statPC1
+
+%repeat for PC2
+GeneT = cell(size(HOMsigGenesPC2,1),1);
+nameT = cell(size(HOMsigGenesPC2,1),1);
+AdjPv = NaN(size(HOMsigGenesPC2,1),1);
+PC2 = NaN(size(HOMsigGenesPC2,1),1);
+for i =1:size(HOMsigGenesPC2,1)
+   %find intersection 
+   [~,~,ib] = intersect(HOMsigGenesPC2{i}, dataStatsHOM.Row_names);
+    GeneT {i} =char(dataStatsHOM.Row_names(ib));
+    nameT{i} = char(dataStatsHOM.name(ib));
+    AdjPv(i) = dataStatsHOM.padj(ib);
+    [~,~,ic] = intersect(HOMsigGenesPC2{i},rankPC2_genes);
+    PC2 (i)= B(ic);
+    clear ib ic
+end
+
+%make into table to export to excel
+statPC2 = table(GeneT, nameT, AdjPv, PC2);
+HOMstatPC2 = sortrows(statPC2, {'PC2'}, {'descend'});
+writetable (statPC2, fullfile(pathname, 'PC2genestatsHOM.xlsx'));
+clear nameT GeneT AdjPv PC2 statPC2
+
+%what are the similar genes between WT and Hom i8vsVir comparisons?
+backgroundGenes = intersect(WTstatPC1.GeneT, HOMstatPC1.GeneT);
+bgtableWT = table;
+bgtableHOM = table;
+for i=1:size(backgroundGenes,1)
+    bgtableWT = [bgtableWT; WTstatPC1(strcmp(WTstatPC1.GeneT, backgroundGenes{i}),:)];
+    bgtableHOM = [bgtableHOM; HOMstatPC1(strcmp(HOMstatPC1.GeneT, backgroundGenes{i}),:)];
+end
+writetable(bgtableWT, fullfile(pathname, 'backgroundGenestatsWT.xlsx'));
+writetable(bgtableHOM, fullfile(pathname, 'backgroundGenestatsHOM.xlsx'));
+
+%make a plot
+    %for every background gene plot its contribution to PC1 as a %
+sigBackgene_weights = NaN(10000,1);
+for i=1:size(backgroundGenes,1)
+    sigBackgene_weights(find(strcmp(rankPC1_genes, backgroundGenes{i}))) = ...
+        B(find(strcmp(rankPC1_genes, backgroundGenes{i})));
+end
+
+%plot this
+figure;
+bar((B(1:10000)/sum(B))*100, 'FaceColor', [0.9 0.9 0.9], 'EdgeColor', [0.9 0.9 0.9]);
+hold on;
+bar((sigBackgene_weights/sum(B))*100, 'r');
+xlim([0 10000]);
+ylim ([0 0.025]);
+xlabel ('Number of Genes', 'FontSize', 14);
+ylabel ('% contribution to PC1', 'FontSize', 14);
+legend ({'p>0.05' 'p<0.05'}, 'FontSize', 14);
+box off
+print(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'SortedPC1genes'), '-depsc', '-tiff')
+savefig(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'SortedPC1genes.fig'))
+saveas(gcf, fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'SortedPC1genes'), 'tiff')
+
+
+%% actually want to compare HOMvsWT in both i8 and vir and see if there is
+%any overlap
+
+%import Eirinn's stats results
+statsresultsi8comp = 'C:\Users\ilbar\Documents\MATLAB\RNAseq\RNAseq\DESeq-i8homVSi8wt-3rdattempt.significant.txt'
+statsresultsVIRcomp = 'C:\Users\ilbar\Documents\MATLAB\RNAseq\RNAseq\DESeq-virhomVSvirwt-3rdattempt.significant.txt'
+
+dataStatsi8 = readtable(statsresultsi8comp,'Delimiter', '\t');
+dataStatsVIR = readtable (statsresultsVIRcomp, 'Delimiter', '\t');
+
+HomGenes = intersect(dataStatsi8.name, dataStatsVIR.name)
+
+i8P = table;
+virP = table;
+for i=1:size(HomGenes,1)
+   i8P = [i8P; dataStatsi8(find(strcmp(dataStatsi8.name, HomGenes{i})),:)];
+   virP = [virP; dataStatsVIR(find(strcmp(dataStatsVIR.name, HomGenes{i})),:)];
+end
+
+writetable(i8P, fullfile(pathname, 'i8Overlapstats.xls'));
+writetable(virP, fullfile(pathname, 'virOverlapstats.xls'));
+
+%make a table to export of just the sig genes, score in PC1 and adjusted P
+%value
+GeneT = cell(size(i8sigGenesPC1,1),1);
+nameT = cell(size(i8sigGenesPC1,1),1);
+AdjPv = NaN(size(i8sigGenesPC1,1),1);
+PC1 = NaN(size(i8sigGenesPC1,1),1);
+for i =1:size(i8sigGenesPC1,1)
+   %find intersection 
+   [~,~,ib] = intersect(i8sigGenesPC1{i}, dataStatsi8.Row_names);
+    GeneT {i} =char(dataStatsi8.Row_names(ib));
+    nameT{i} = char(dataStatsi8.name(ib));
+    AdjPv(i) = dataStatsi8.padj(ib);
+    [~,~,ic] = intersect(i8sigGenesPC1{i},rankPC1_genes);
+    PC1 (i)= B(ic);
+    clear ib ic
+end
+
+%make into table to export to excel
+statPC1 = table(GeneT, nameT, AdjPv, PC1);
+i8statPC1 = sortrows(statPC1, {'PC1'}, {'descend'});
+writetable (statPC1, fullfile(pathname, 'PC1genestatsi8.xlsx'));
+clear GeneT nameT AdjPv PC1 statPC1
+
+%repeat for PC2
+GeneT = cell(size(i8sigGenesPC2,1),1);
+nameT = cell(size(i8sigGenesPC2,1),1);
+AdjPv = NaN(size(i8sigGenesPC2,1),1);
+PC2 = NaN(size(i8sigGenesPC2,1),1);
+for i =1:size(i8sigGenesPC2,1)
+   %find intersection 
+   [~,~,ib] = intersect(i8sigGenesPC2{i}, dataStatsi8.Row_names);
+    GeneT {i} =char(dataStatsi8.Row_names(ib));
+    nameT{i} = char(dataStatsi8.name(ib));
+    AdjPv(i) = dataStatsi8.padj(ib);
+    [~,~,ic] = intersect(i8sigGenesPC2{i},rankPC2_genes);
+    PC2 (i)= B(ic);
+    clear ib ic
+end
+
+%make into table to export to excel
+statPC2 = table(GeneT, nameT, AdjPv, PC2);
+i8statPC2 = sortrows(statPC2, {'PC2'}, {'descend'});
+writetable (statPC2, fullfile(pathname, 'PC2genestatsi8.xlsx'));
+clear nameT GeneT AdjPv PC2 statPC2
+
+%and for homs
+VIRsigGenesPC1 = intersect(dataStatsVIR.Row_names, rankPC1_genes);
+VIRsigGenesPC2 = intersect(dataStatsVIR.Row_names, rankPC2_genes);
+
+%make a table to export of just the sig genes, score in PC1 and adjusted P
+%value
+GeneT = cell(size(VIRsigGenesPC1,1),1);
+nameT = cell(size(VIRsigGenesPC1,1),1);
+AdjPv = NaN(size(VIRsigGenesPC1,1),1);
+PC1 = NaN(size(VIRsigGenesPC1,1),1);
+for i =1:size(VIRsigGenesPC1,1)
+   %find intersection 
+   [~,~,ib] = intersect(VIRsigGenesPC1{i}, dataStatsVIR.Row_names);
+    GeneT {i} =char(dataStatsVIR.Row_names(ib));
+    nameT{i} = char(dataStatsVIR.name(ib));
+    AdjPv(i) = dataStatsVIR.padj(ib);
+    [~,~,ic] = intersect(VIRsigGenesPC1{i},rankPC1_genes);
+    PC1 (i)= B(ic);
+    clear ib ic
+end
+
+%make into table to export to excel
+statPC1 = table(GeneT, nameT, AdjPv, PC1);
+VIRstatPC1 = sortrows(statPC1, {'PC1'}, {'descend'});
+writetable (statPC1, fullfile(pathname, 'PC1genestatsVIR.xlsx'));
+clear GeneT nameT AdjPv PC1
+
+%repeat for PC2
+GeneT = cell(size(VIRsigGenesPC2,1),1);
+nameT = cell(size(VIRsigGenesPC2,1),1);
+AdjPv = NaN(size(VIRsigGenesPC2,1),1);
+PC2 = NaN(size(VIRsigGenesPC2,1),1);
+for i =1:size(VIRsigGenesPC2,1)
+   %find intersection 
+   [~,~,ib] = intersect(VIRsigGenesPC2{i}, dataStatsVIR.Row_names);
+    GeneT {i} =char(dataStatsVIR.Row_names(ib));
+    nameT{i} = char(dataStatsVIR.name(ib));
+    AdjPv(i) = dataStatsVIR.padj(ib);
+    [~,~,ic] = intersect(VIRsigGenesPC2{i},rankPC2_genes);
+    PC2 (i)= B(ic);
+    clear ib ic
+end
+
+%make into table to export to excel
+statPC2 = table(GeneT, nameT, AdjPv, PC2);
+VIRstatPC2 = sortrows(statPC2, {'PC2'}, {'descend'});
+writetable (statPC2, fullfile(pathname, 'PC2genestatsVIR.xlsx'));
+clear nameT GeneT AdjPv PC2
+
+
