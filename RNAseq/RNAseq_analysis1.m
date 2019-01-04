@@ -74,6 +74,9 @@ ylim ([0 1]);
 ylabel('Variance Explained', 'FontSize', 14)
 xlabel('Number of Principal Components', 'FontSize', 14)
 xlim ([0 15])
+ax=gca;
+ax.XTick=[1:2:15]
+ax.YTick = [0:0.2:1]
 hold on;
 stem(find(cumsum(explained)>95,1), 1, '.', 'color', [0.8 0.8 0.8], 'linewidth', 2)
 print(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'PCvarExplained'), '-depsc', '-tiff')
@@ -267,7 +270,7 @@ rankPC1_chromosome= chromosome2(I(1:10000));
 rankPC1_genes = genes2(I(1:10000));
 
 %for PC2
-[B2,I2] = sort(score(:,2).^2)
+[B2,I2] = sort(score(:,2).^2);
 I2 = flip (I2);
 B2 = flip (B2);
 
@@ -293,44 +296,48 @@ GeneT = cell(size(WTsigGenesPC1,1),1);
 nameT = cell(size(WTsigGenesPC1,1),1);
 AdjPv = NaN(size(WTsigGenesPC1,1),1);
 PC1 = NaN(size(WTsigGenesPC1,1),1);
+log2direction = NaN(size(WTsigGenesPC1,1),1);
 for i =1:size(WTsigGenesPC1,1)
    %find intersection 
    [~,~,ib] = intersect(WTsigGenesPC1{i}, dataStatsWT.Row_names);
     GeneT {i} =char(dataStatsWT.Row_names(ib));
     nameT{i} = char(dataStatsWT.name(ib));
     AdjPv(i) = dataStatsWT.padj(ib);
+    log2direction(i) = dataStatsWT.log2FoldChange(ib);
     [~,~,ic] = intersect(WTsigGenesPC1{i},rankPC1_genes);
     PC1 (i)= B(ic);
     clear ib ic
 end
 
 %make into table to export to excel
-statPC1 = table(GeneT, nameT, AdjPv, PC1);
+statPC1 = table(GeneT, nameT, AdjPv, PC1, log2direction);
 WTstatPC1 = sortrows(statPC1, {'PC1'}, {'descend'});
 writetable (statPC1, fullfile(pathname, 'PC1genestatsWT.xlsx'));
-clear GeneT nameT AdjPv PC1 statPC1
+clear GeneT nameT AdjPv PC1 statPC1 log2direction
 
 %repeat for PC2
 GeneT = cell(size(WTsigGenesPC2,1),1);
 nameT = cell(size(WTsigGenesPC2,1),1);
 AdjPv = NaN(size(WTsigGenesPC2,1),1);
 PC2 = NaN(size(WTsigGenesPC2,1),1);
+log2direction = NaN(size(WTsigGenesPC2,1),1);
 for i =1:size(WTsigGenesPC2,1)
    %find intersection 
    [~,~,ib] = intersect(WTsigGenesPC2{i}, dataStatsWT.Row_names);
     GeneT {i} =char(dataStatsWT.Row_names(ib));
     nameT{i} = char(dataStatsWT.name(ib));
     AdjPv(i) = dataStatsWT.padj(ib);
+    log2direction(i) = dataStatsWT.log2FoldChange(ib);
     [~,~,ic] = intersect(WTsigGenesPC2{i},rankPC2_genes);
     PC2 (i)= B(ic);
     clear ib ic
 end
 
 %make into table to export to excel
-statPC2 = table(GeneT, nameT, AdjPv, PC2);
+statPC2 = table(GeneT, nameT, AdjPv, PC2, log2direction);
 WTstatPC2 = sortrows(statPC2, {'PC2'}, {'descend'});
 writetable (statPC2, fullfile(pathname, 'PC2genestatsWT.xlsx'));
-clear nameT GeneT AdjPv PC2 statPC2
+clear nameT GeneT AdjPv PC2 statPC2 log2direction
 
 %and for homs
 HOMsigGenesPC1 = intersect(dataStatsHOM.Row_names, rankPC1_genes);
@@ -342,46 +349,52 @@ GeneT = cell(size(HOMsigGenesPC1,1),1);
 nameT = cell(size(HOMsigGenesPC1,1),1);
 AdjPv = NaN(size(HOMsigGenesPC1,1),1);
 PC1 = NaN(size(HOMsigGenesPC1,1),1);
+log2direction = NaN(size(HOMsigGenesPC1,1),1);
 for i =1:size(HOMsigGenesPC1,1)
    %find intersection 
    [~,~,ib] = intersect(HOMsigGenesPC1{i}, dataStatsHOM.Row_names);
     GeneT {i} =char(dataStatsHOM.Row_names(ib));
     nameT{i} = char(dataStatsHOM.name(ib));
     AdjPv(i) = dataStatsHOM.padj(ib);
+    log2direction(i) = dataStatsHOM.log2FoldChange(ib);
     [~,~,ic] = intersect(HOMsigGenesPC1{i},rankPC1_genes);
     PC1 (i)= B(ic);
     clear ib ic
 end
 
 %make into table to export to excel
-statPC1 = table(GeneT, nameT, AdjPv, PC1);
+statPC1 = table(GeneT, nameT, AdjPv, PC1, log2direction);
 HOMstatPC1 = sortrows(statPC1, {'PC1'}, {'descend'});
 writetable (statPC1, fullfile(pathname, 'PC1genestatsHOM.xlsx'));
-clear GeneT nameT AdjPv PC1 statPC1
+clear GeneT nameT AdjPv PC1 statPC1 log2direction
 
 %repeat for PC2
 GeneT = cell(size(HOMsigGenesPC2,1),1);
 nameT = cell(size(HOMsigGenesPC2,1),1);
 AdjPv = NaN(size(HOMsigGenesPC2,1),1);
 PC2 = NaN(size(HOMsigGenesPC2,1),1);
+log2direction = NaN(size(HOMsigGenesPC2,1),1);
 for i =1:size(HOMsigGenesPC2,1)
    %find intersection 
    [~,~,ib] = intersect(HOMsigGenesPC2{i}, dataStatsHOM.Row_names);
     GeneT {i} =char(dataStatsHOM.Row_names(ib));
     nameT{i} = char(dataStatsHOM.name(ib));
     AdjPv(i) = dataStatsHOM.padj(ib);
+    log2direction(i) = dataStatsHOM.log2FoldChange(ib);
     [~,~,ic] = intersect(HOMsigGenesPC2{i},rankPC2_genes);
     PC2 (i)= B(ic);
     clear ib ic
 end
 
 %make into table to export to excel
-statPC2 = table(GeneT, nameT, AdjPv, PC2);
+statPC2 = table(GeneT, nameT, AdjPv, PC2, log2direction);
 HOMstatPC2 = sortrows(statPC2, {'PC2'}, {'descend'});
 writetable (statPC2, fullfile(pathname, 'PC2genestatsHOM.xlsx'));
-clear nameT GeneT AdjPv PC2 statPC2
+clear nameT GeneT AdjPv PC2 statPC2 log2direction
 
 %what are the similar genes between WT and Hom i8vsVir comparisons?
+    %need to take into account the direction of change - filter for same
+    %direction of change as well
 backgroundGenes = intersect(WTstatPC1.GeneT, HOMstatPC1.GeneT);
 bgtableWT = table;
 bgtableHOM = table;
@@ -389,15 +402,19 @@ for i=1:size(backgroundGenes,1)
     bgtableWT = [bgtableWT; WTstatPC1(strcmp(WTstatPC1.GeneT, backgroundGenes{i}),:)];
     bgtableHOM = [bgtableHOM; HOMstatPC1(strcmp(HOMstatPC1.GeneT, backgroundGenes{i}),:)];
 end
+%only keep genes that are significant in the same direction
+sameDirection = intersect(find(bgtableWT.log2direction<0), find(bgtableHOM.log2direction<0));
+bgtableWT = bgtableWT(sameDirection,:);
+bgtableHOM = bgtableHOM(sameDirection,:);
 writetable(bgtableWT, fullfile(pathname, 'backgroundGenestatsWT.xlsx'));
 writetable(bgtableHOM, fullfile(pathname, 'backgroundGenestatsHOM.xlsx'));
 
 %make a plot
     %for every background gene plot its contribution to PC1 as a %
 sigBackgene_weights = NaN(10000,1);
-for i=1:size(backgroundGenes,1)
-    sigBackgene_weights(find(strcmp(rankPC1_genes, backgroundGenes{i}))) = ...
-        B(find(strcmp(rankPC1_genes, backgroundGenes{i})));
+for i=1:size(bgtableWT,1)
+    sigBackgene_weights(find(strcmp(rankPC1_genes, bgtableWT.GeneT{i}))) = ...
+        B(find(strcmp(rankPC1_genes, bgtableWT.GeneT{i})));
 end
 
 %plot this
@@ -415,6 +432,44 @@ print(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'SortedPC1genes')
 savefig(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'SortedPC1genes.fig'))
 saveas(gcf, fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'SortedPC1genes'), 'tiff')
 
+%same for PC2 as a comparison
+backgroundGenesPC2 = intersect(WTstatPC2.GeneT, HOMstatPC2.GeneT);
+bgtableWTPC2 = table;
+bgtableHOMPC2 = table;
+for i=1:size(backgroundGenesPC2,1)
+    bgtableWTPC2 = [bgtableWTPC2; WTstatPC2(strcmp(WTstatPC2.GeneT, backgroundGenesPC2{i}),:)];
+    bgtableHOMPC2 = [bgtableHOMPC2; HOMstatPC2(strcmp(HOMstatPC2.GeneT, backgroundGenesPC2{i}),:)];
+end
+%only keep genes that are significant in the same direction
+sameDirectionPC2 = intersect(find(bgtableWTPC2.log2direction<0), ...
+    find(bgtableHOMPC2.log2direction<0));
+bgtableWTPC2 = bgtableWTPC2(sameDirectionPC2,:);
+bgtableHOMPC2 = bgtableHOMPC2(sameDirectionPC2,:);
+writetable(bgtableWTPC2, fullfile(pathname, 'backgroundGenestatsWTPC2.xlsx'));
+writetable(bgtableHOMPC2, fullfile(pathname, 'backgroundGenestatsHOMPC2.xlsx'));
+
+%make a plot
+    %for every background gene plot its contribution to PC1 as a %
+sigBackgene_weightsPC2 = NaN(10000,1);
+for i=1:size(bgtableWTPC2,1)
+    sigBackgene_weightsPC2(find(strcmp(rankPC2_genes, bgtableWTPC2.GeneT{i}))) = ...
+        B2(find(strcmp(rankPC2_genes, bgtableWTPC2.GeneT{i})));
+end
+
+%plot this
+figure;
+bar((B2(1:10000)/sum(B2))*100, 'FaceColor', [0.9 0.9 0.9], 'EdgeColor', [0.9 0.9 0.9]);
+hold on;
+bar((sigBackgene_weightsPC2/sum(B2))*100, 'b');
+xlim([0 10000]);
+ylim ([0 0.025]);
+xlabel ('Number of Genes', 'FontSize', 14);
+ylabel ('% contribution to PC2', 'FontSize', 14);
+legend ({'p>0.05' 'p<0.05'}, 'FontSize', 14);
+box off
+print(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'SortedPC2genes'), '-depsc', '-tiff')
+savefig(fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'SortedPC2genes.fig'))
+saveas(gcf, fullfile(fileparts(fileparts(pathname)), 'FinalFigures', 'SortedPC2genes'), 'tiff')
 
 %% actually want to compare HOMvsWT in both i8 and vir and see if there is
 %any overlap
