@@ -122,6 +122,220 @@ legend (key, 'Fontsize', 18) %adds legend
 saveas(gcf, fullfile(fileparts(filepath), 'Figures', strcat(name,...
    '_10minSleepZoomNight1_2')),'tiff')
 
+%% sleep stats and plot spreads
+
+%set saveName
+[~,expName, ~] = fileparts(fname);
+
+%for both experiments and look at day and night sleep architecture
+sleep_d  = nan(size(geno.data{2},2),3); %nan table to fit data into
+sleepbout_d  = nan(size(geno.data{2},2),3);
+sleeplength_d  = nan(size(geno.data{2},2),3);
+sleep_n  = nan(size(geno.data{2},2),3);
+sleepbout_n  = nan(size(geno.data{2},2),3);
+sleeplength_n = nan(size(geno.data{2},2),3);
+wactivity_d  = nan(size(geno.data{2},2),3);
+wactivity_n = nan(size(geno.data{2},2),3);
+for j=1:size(geno.data,2) %each genotype
+    sleep_d (1:size(geno.data{j},2),j) = ...
+        geno.summarytable.sleep.daytotal{j}; %day total
+    sleepbout_d  (1:size(geno.data{j},2),j) = ...
+        geno.summarytable.sleepBout.daymean{j}; %day average
+    sleeplength_d (1:size(geno.data{j},2),j) = ...
+        geno.summarytable.sleepLength.daymean{j}; %day average
+    sleep_n  (1:size(geno.data{j},2),j) = ...
+       geno.summarytable.sleep.nighttotal{j}; %night total
+    sleepbout_n  (1:size(geno.data{j},2),j) = ...
+        geno.summarytable.sleepBout.nightmean{j}; %night average
+    sleeplength_n(1:size(geno.data{j},2),j) = ...
+        geno.summarytable.sleepLength.nightmean{j}; %night average
+    wactivity_d (1:size(geno.data{j},2),j) = ...
+       geno.summarytable.averageWaking.daymean{j}; %day average
+    wactivity_n (1:size(geno.data{j},2),j) = ...
+        geno.summarytable.averageWaking.nightmean{j}; %night average
+end
+
+%make the plots
+figure('position', [25, 50, 1000, 500]);
+subplot (1,3,1)
+h= plotSpread(fliplr(sleep_d), 'distributionColors',flip(cmap), 'showMM', 2);   
+ax=gca;   
+ax.XTickLabel ={'WT', 'HET', 'HOM'};
+ax.XTickLabelRotation = 45;   
+ax.FontSize = 14;
+set(findall(gca, 'type', 'line'), 'markersize', 12) 
+h{2}(1).LineWidth = 3;
+h{2}(1).Color = [0.5 0.5 0.5];
+ylim([0 1000]);
+ylabel('Total sleep (mins)', 'Fontsize', 16)
+clear h
+
+subplot (1,3,2)
+h = plotSpread(fliplr(sleepbout_d), 'distributionColor', flip(cmap), 'showMM', 2);
+ax = gca;
+ax.XTickLabel ={'WT', 'HET', 'HOM'};
+ax.XTickLabelRotation = 45; 
+ax.FontSize = 14;
+set(findall(gca, 'type', 'line'), 'markersize', 12) 
+h{2}(1).LineWidth = 3;
+h{2}(1).Color = [0.5 0.5 0.5];
+ylim([0 60])
+ylabel('Sleep Bouts', 'Fontsize', 16)
+
+subplot (1,3,3)
+k= plotSpread(fliplr(sleeplength_d), 'distributionColor', flip(cmap), 'showMM',2);
+ax = gca;
+ax.XTickLabel ={'WT', 'HET', 'HOM'};
+ax.XTickLabelRotation = 45; 
+ax.FontSize = 14;
+set(findall(gca, 'type', 'line'), 'markersize', 12) 
+k{2}(1).LineWidth = 3;
+k{2}(1).Color = [0.5 0.5 0.5];
+ylim([0 10])
+ylabel('Sleep length (mins)', 'Fontsize', 16)
+
+savefig(fullfile(fileparts(filepath), 'FinalFigures', strcat(expName,...
+    'day_sleep.fig')))
+print(fullfile(fileparts(filepath), 'FinalFigures', strcat(expName,...
+    'day_sleep')), '-depsc')
+saveas(gcf,fullfile(fileparts(filepath), 'FinalFigures', strcat(expName,...
+    'day_sleep')), 'tiff')
+    
+figure('position', [25, 50, 1000, 500]);
+subplot (1,3,1)
+rectangle('Position', [0 0 4 1000], 'Facecolor', [0.9 0.9 0.9],...
+   'Edgecolor', [1 1 1]);
+hold on;
+l = plotSpread(fliplr(sleep_n{i}), 'distributionColor', flip(cmap), 'showMM',2);
+ax = gca;
+ax.XTickLabel ={'WT', 'HET', 'HOM'};
+ax.XTickLabelRotation = 45;    
+ax.FontSize = 14;
+set(findall(gca, 'type', 'line'), 'markersize', 12) 
+l{2}(1).LineWidth = 3;
+l{2}(1).Color = [1 1 1];
+ylim([0 1000]);
+ylabel('Total sleep (mins)', 'Fontsize', 16)
+
+subplot (1,3,2);
+rectangle('Position', [0 0 4 60], 'Facecolor', [0.9 0.9 0.9],...
+       'Edgecolor', [1 1 1]);
+hold on
+m=plotSpread(fliplr(sleepbout_n{i}), 'distributionColor', flip(cmap), 'showMM',2);
+ax = gca;
+ax.XTickLabel ={'WT', 'HET', 'HOM'};
+ax.XTickLabelRotation = 45; 
+ax.FontSize = 14;
+set(findall(gca, 'type', 'line'), 'markersize', 12) 
+m{2}(1).LineWidth = 3;
+m{2}(1).Color = [1 1 1];
+ylim([0 60])
+ylabel('Sleep bouts', 'Fontsize', 16)
+
+subplot(1,3,3);
+rectangle('Position', [0 0 4 25], 'Facecolor', [0.9 0.9 0.9],...
+   'Edgecolor', [1 1 1]);
+hold on
+n=plotSpread(fliplr(sleeplength_n{i}), 'distributionColor', flip(cmap),'showMM',2);
+ylim([0 25])
+ax = gca;
+ax.XTickLabel ={'WT', 'HET', 'HOM'};
+ax.XTickLabelRotation = 45; 
+ax.FontSize = 14;
+set(findall(gca, 'type', 'line'), 'markersize', 12) 
+m{2}(1).LineWidth = 3;;
+n{2}(1).Color = [1 1 1];
+ylim ([0 20])
+ylabel('Sleep length (mins)', 'Fontsize', 16)
+
+savefig(fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(i).name(1:6),...
+    'night_sleep.fig')))
+print(fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(i).name(1:6),...
+    'night_sleep')), '-depsc')
+saveas(gcf,fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(i).name(1:6),...
+    'night_sleep')), 'tiff')
+    
+
+%wactivity plotting
+for i = 1:size(sleepStructure,2) %each experiment
+   figure('position', [25, 50, 750, 500]);
+   subplot(1,2,1)
+    h=plotSpread(fliplr(wactivity_d{i}), 'distributionColor', flip(cmap), 'showMM',2);
+    ax = gca;
+    ax.XTickLabel ={'WT', 'HET', 'HOM'};
+    ax.XTickLabelRotation = 45; 
+    ax.FontSize = 14;
+    set(findall(gca, 'type', 'line'), 'markersize', 12) 
+    h{2}(1).LineWidth = 3;
+    h{2}(1).Color = [0.5 0.5 0.5];
+    ylim([0 14])
+    ylabel('Average Day waking activity (sec min^{-1})', 'Fontsize', 16)
+   
+    
+    subplot(1,2,2);
+    rectangle ('Position', [0 0 4 14], 'Facecolor', [0.9 0.9 0.9], 'EdgeColor', [1 1 1]);
+    hold on;
+    j=plotSpread(fliplr(wactivity_n{i}), 'distributionColor', flip(cmap), 'showMM',2);
+    ax = gca;
+     ax.XTickLabel ={'WT', 'HET', 'HOM'};
+    ax.XTickLabelRotation = 45; 
+    ax.FontSize = 14;
+    set(findall(gca, 'type', 'line'), 'markersize', 12);
+    j{2}(1).LineWidth = 3
+    j{2}(1).Color = [1 1 1];
+    ylim([0 4])
+    ylabel('Average Night waking activity (sec min^{-1})', 'Fontsize', 16)
+
+    savefig(fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(i).name(1:6),...
+    'wactivity.fig')))
+    print(fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(i).name(1:6),...
+    'wactivity')), '-depsc')
+    saveas(gcf,fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(i).name(1:6),...
+    'wactivity')), 'tiff')
+end
+
+
+
+%do stats on finalScaled_all
+P = NaN(8,2);
+mult = cell(8,1);
+features ={'sleep_d' 'sleep_n' 'sleepbout_d' 'sleepbout_n' 'sleeplength_d'...
+    'sleeplength_n' 'wactivity_d' 'wactivity_n' }
+    [P(1,e), ~, stats]= kruskalwallis (sleep_d, [], 'off');
+    mult {1,e} = multcompare(stats);
+    clear stats
+    close;
+    [P(2,e), ~, stats] =kruskalwallis(sleep_n{e}, [], 'off');
+    mult{2,e} = multcompare(stats);
+    clear stats
+    close;
+    [P(3,e), ~, stats] =kruskalwallis(sleepbout_d{e}, [], 'off');
+    mult{3,e} = multcompare(stats);
+    clear stats
+    close;
+    [P(4,e), ~, stats] =kruskalwallis(sleepbout_n{e}, [], 'off');
+    mult{4,e} = multcompare(stats);
+    clear stats
+    close;
+    [P(5,e), ~, stats] =kruskalwallis(sleeplength_d{e}, [], 'off');
+    mult{5,e} = multcompare(stats);
+    clear stats
+    close;
+    [P(6,e), ~, stats] =kruskalwallis(sleeplength_n{e}, [], 'off');
+    mult{6,e} = multcompare(stats);
+    clear stats
+    close;
+    [P(7,e), ~, stats] =kruskalwallis(wactivity_d{e}, [], 'off');
+    mult{7,e} = multcompare(stats);
+    clear stats
+    close;
+    [P(8,e), ~, stats] =kruskalwallis(wactivity_n{e}, [], 'off');
+    mult{8,e} = multcompare(stats);
+    clear stats
+    close;
+
+
+
 
 %% repeated measures ANOVA
 
