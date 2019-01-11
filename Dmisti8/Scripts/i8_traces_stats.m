@@ -2,7 +2,7 @@
 %experiments
 
 %% load data
-
+addpath(genpath('C:\Users\ilbar\Documents\MATLAB\DreammistPaper\'));
 %pick folder with experiments in
 folder = uigetdir; %select folder with .mat workspaces to be concatenated
 
@@ -23,8 +23,6 @@ end
 %remove empty fields
 sleepStructure = sleepStructure(~cellfun(@isempty,{sleepStructure.geno}));
 
-
-%% plot sleep/wake charts for each of the experiments
 for i = 1:size (sleepStructure,2)
     LB(1:7,i) = find(sleepStructure(i).geno.geno.lightboundries)/10;
 end
@@ -33,6 +31,8 @@ sem = @(x) ((nanstd(x'))./ sqrt(size(x,2))); %inline function for standard error
 
 %set colormap for plotting data
 cmap = [1 0 1; 0 1 0; 0 0 0];  %chose the red, blue and black part of the colormap
+%% plot sleep/wake charts for each of the experiments
+
 
 %plot sleep and activity, and average waking activity
 for j = 1:size(sleepStructure,2) %each experiment
@@ -157,8 +157,9 @@ for j = 1:size(sleepStructure,2) %each experiment
        '_wakingactivity2')),'tiff')
 end
 
+%% zoom in plots
 %use e=1 as the example and zoom in wactivity
-j=1
+j=4
 figure
 for i =1:2:size(LB,1)-1
     rectangle ('Position', [LB(i,j) 0 (LB(i+1,j) - LB(i,j)) 15], 'Edgecolor', [1 1 1]);
@@ -187,7 +188,7 @@ xlim([LB(3,j) LB(7,j)])
 xlabel ('Zeitgeber time (hours)', 'Fontsize', 18);
 ylabel ('Waking Activity (sec min^{-1}/10mins)', 'Fontsize', 18)
 gcf;
-xlim ([LB(4), LB(5)]);
+xlim ([LB(4,j), LB(5,j)]);
 ylim ([0 2]);
 savefig(gcf, fullfile(fileparts (folder),'expFigures', strcat(sleepStructure(j).name(1:6),...
    '_10minWactivityZoomNight1.fig')));
@@ -227,8 +228,8 @@ xlim([LB(3,j) LB(7,j)])
 xlabel ('Zeitgeber time (hours)', 'Fontsize', 18);
 ylabel ('Sleep (mins/10 mins)', 'Fontsize', 18)
 gcf;
-xlim ([LB(4), LB(5)]);
-ylim ([0 6]);
+xlim ([LB(4,j), LB(5,j)]);
+ylim ([3 8]);
 savefig(gcf, fullfile(fileparts (folder),'expFigures', strcat(sleepStructure(j).name(1:6),...
    '_10minSleepZoomNight1.fig')));
 print(gcf, fullfile(fileparts(folder), 'expFigures', strcat(sleepStructure(j).name(1:6), ...
@@ -285,7 +286,9 @@ for i = 1:size(sleepStructure,2) %each experiment
     figure('position', [25, 50, 1000, 500]);
     
     subplot (1,3,1)
-    h= plotSpread(fliplr(sleep_d{i}), 'distributionColors', flip(cmap), 'showMM', 2);   
+    h= plotSpread(fliplr(sleep_d{i}), 'distributionColors', flip(cmap));
+    hold on;
+    errorbar(nanmedian(fliplr(sleep_d{i})), sem(fliplr(sleep_d{i})'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
     ax=gca;   
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;   
@@ -298,7 +301,8 @@ for i = 1:size(sleepStructure,2) %each experiment
     clear h
     
     subplot (1,3,2)
-    h = plotSpread(fliplr(sleepbout_d{i}), 'distributionColor', flip(cmap), 'showMM', 2);
+    h = plotSpread(fliplr(sleepbout_d{i}), 'distributionColor', flip(cmap));
+    errorbar(nanmedian(fliplr(sleepbout_d{i})), sem(fliplr(sleepbout_d{i})'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45; 
@@ -310,7 +314,8 @@ for i = 1:size(sleepStructure,2) %each experiment
     ylabel('Sleep Bouts', 'Fontsize', 16)
     
     subplot (1,3,3)
-    k= plotSpread(fliplr(sleeplength_d{i}), 'distributionColor', flip(cmap), 'showMM',2);
+    k= plotSpread(fliplr(sleeplength_d{i}), 'distributionColor', flip(cmap));
+    errorbar(nanmedian(fliplr(sleeplength_d{i})), sem(fliplr(sleeplength_d{i})'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45; 
@@ -333,7 +338,8 @@ for i = 1:size(sleepStructure,2) %each experiment
    rectangle('Position', [0 0 4 2000], 'Facecolor', [0.9 0.9 0.9],...
        'Edgecolor', [1 1 1]);
     hold on;
-    l = plotSpread(fliplr(sleep_n{i}), 'distributionColor', flip(cmap), 'showMM',2);
+    l = plotSpread(fliplr(sleep_n{i}), 'distributionColor', flip(cmap));
+    errorbar(nanmedian(fliplr(sleep_n{i})), sem(fliplr(sleep_n{i})'), '+', 'Color', [1 1 1], 'LineWidth', 2) 
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;    
@@ -349,7 +355,8 @@ for i = 1:size(sleepStructure,2) %each experiment
     rectangle('Position', [0 0 4 150], 'Facecolor', [0.9 0.9 0.9],...
            'Edgecolor', [1 1 1]);
     hold on
-    m=plotSpread(fliplr(sleepbout_n{i}), 'distributionColor', flip(cmap), 'showMM',2);
+    m=plotSpread(fliplr(sleepbout_n{i}), 'distributionColor', flip(cmap));
+    errorbar(nanmedian(fliplr(sleepbout_n{i})), sem(fliplr(sleepbout_n{i})'), '+', 'Color', [1 1 1], 'LineWidth', 2)     
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45; 
@@ -365,7 +372,8 @@ for i = 1:size(sleepStructure,2) %each experiment
     rectangle('Position', [0 0 4 50], 'Facecolor', [0.9 0.9 0.9],...
        'Edgecolor', [1 1 1]);
     hold on
-    n=plotSpread(fliplr(sleeplength_n{i}), 'distributionColor', flip(cmap),'showMM',2);
+    n=plotSpread(fliplr(sleeplength_n{i}), 'distributionColor', flip(cmap));
+    errorbar(nanmedian(fliplr(sleeplength_n{i})), sem(fliplr(sleeplength_n{i})'), '+', 'Color', [1 1 1], 'LineWidth', 2) 
     ylim([0 25])
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
@@ -391,7 +399,8 @@ end
 for i = 1:size(sleepStructure,2) %each experiment
    figure('position', [25, 50, 750, 500]);
    subplot(1,2,1)
-    h=plotSpread(fliplr(wactivity_d{i}), 'distributionColor', flip(cmap), 'showMM',2);
+    h=plotSpread(fliplr(wactivity_d{i}), 'distributionColor', flip(cmap));
+    errorbar(nanmedian(fliplr(wactivity_d{i})), sem(fliplr(wactivity_d{i})'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45; 
@@ -406,7 +415,8 @@ for i = 1:size(sleepStructure,2) %each experiment
     subplot(1,2,2);
     rectangle ('Position', [0 0 4 14], 'Facecolor', [0.9 0.9 0.9], 'EdgeColor', [1 1 1]);
     hold on;
-    j=plotSpread(fliplr(wactivity_n{i}), 'distributionColor', flip(cmap), 'showMM',2);
+    j=plotSpread(fliplr(wactivity_n{i}), 'distributionColor', flip(cmap));
+    errorbar(nanmedian(fliplr(wactivity_n{i})), sem(fliplr(wactivity_n{i})'), '+', 'Color', [1 1 1], 'LineWidth', 2) 
     ax = gca;
      ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45; 
@@ -432,36 +442,36 @@ mult = cell(8,1);
 features ={'sleep_d' 'sleep_n' 'sleepbout_d' 'sleepbout_n' 'sleeplength_d'...
     'sleeplength_n' 'wactivity_d' 'wactivity_n' }
 for e = 1:size(sleepStructure,2)
-    [P(1,e), ~, stats]= kruskalwallis (sleep_d{e}, [], 'off');
-    mult {1,e} = multcompare(stats);
+    [P(1,e), ~, stats]= kruskalwallis (fliplr(sleep_d{e}), [], 'off');
+    mult {1,e} = multcompare(stats, 'ctype', 'dunn-sidak');
     clear stats
     close;
-    [P(2,e), ~, stats] =kruskalwallis(sleep_n{e}, [], 'off');
-    mult{2,e} = multcompare(stats);
+    [P(2,e), ~, stats] =kruskalwallis(fliplr(sleep_n{e}), [], 'off');
+    mult{2,e} = multcompare(stats, 'ctype', 'dunn-sidak');
     clear stats
     close;
-    [P(3,e), ~, stats] =kruskalwallis(sleepbout_d{e}, [], 'off');
-    mult{3,e} = multcompare(stats);
+    [P(3,e), ~, stats] =kruskalwallis(fliplr(sleepbout_d{e}), [], 'off');
+    mult{3,e} = multcompare(stats, 'ctype', 'dunn-sidak');
     clear stats
     close;
-    [P(4,e), ~, stats] =kruskalwallis(sleepbout_n{e}, [], 'off');
-    mult{4,e} = multcompare(stats);
+    [P(4,e), ~, stats] =kruskalwallis(fliplr(sleepbout_n{e}), [], 'off');
+    mult{4,e} = multcompare(stats, 'ctype', 'dunn-sidak');
     clear stats
     close;
-    [P(5,e), ~, stats] =kruskalwallis(sleeplength_d{e}, [], 'off');
-    mult{5,e} = multcompare(stats);
+    [P(5,e), ~, stats] =kruskalwallis(fliplr(sleeplength_d{e}), [], 'off');
+    mult{5,e} = multcompare(stats, 'ctype', 'dunn-sidak');
     clear stats
     close;
-    [P(6,e), ~, stats] =kruskalwallis(sleeplength_n{e}, [], 'off');
-    mult{6,e} = multcompare(stats);
+    [P(6,e), ~, stats] =kruskalwallis(fliplr(sleeplength_n{e}), [], 'off');
+    mult{6,e} = multcompare(stats, 'ctype', 'dunn-sidak');
     clear stats
     close;
-    [P(7,e), ~, stats] =kruskalwallis(wactivity_d{e}, [], 'off');
-    mult{7,e} = multcompare(stats);
+    [P(7,e), ~, stats] =kruskalwallis(fliplr(wactivity_d{e}), [], 'off');
+    mult{7,e} = multcompare(stats, 'ctype', 'dunn-sidak');
     clear stats
     close;
     [P(8,e), ~, stats] =kruskalwallis(wactivity_n{e}, [], 'off');
-    mult{8,e} = multcompare(stats);
+    mult{8,e} = multcompare(stats, 'ctype', 'dunn-sidak');
     clear stats
     close;
 end

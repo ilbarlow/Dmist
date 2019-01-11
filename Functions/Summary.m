@@ -205,7 +205,7 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
     finalScaled_allsem = cell(1,size(Scaled2,2));
     for p = 1:size(finalScaled,2) %every parameter
         finalScaled_all{p} = vertcat(cell2mat(finalScaled(:,p))); %concatenate matrices
-        finalScaled_allmean{p} = nanmean(finalScaled_all{p})'; %find average
+        finalScaled_allmean{p} = nanmedian(finalScaled_all{p})'; %find average
         finalScaled_allsem{p} = (nanstd(finalScaled_all{p})./...
             (sqrt(sum(~isnan(finalScaled_all{p})))))';
     end
@@ -219,7 +219,7 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
     mult = cell(size(finalScaled_all,2),1);
     for p=1:size(finalScaled_all,2) %every parameter
         [P(p), ~, stats]= kruskalwallis (finalScaled_all{p}, [], 'off');
-        mult {p} = multcompare(stats);
+        mult {p} = multcompare(stats,  'ctype', 'dunn-sidak');
         close;
     end
     

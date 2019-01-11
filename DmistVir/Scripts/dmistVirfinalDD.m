@@ -22,8 +22,6 @@ end
 %remove empty fields
 sleepStructure = sleepStructure(~cellfun(@isempty,{sleepStructure.geno}));
 
-
-%% plot sleep/wake charts for each of the experiments
 LB = NaN(7, size(sleepStructure,2));
 nFish = NaN(size(sleepStructure,2), 3);
 for i = 1:size (sleepStructure,2)
@@ -39,6 +37,8 @@ sem = @(x) ((nanstd(x'))./ sqrt(size(x,2))); %inline function for standard error
 cmap = [1 0 0; 0 0 1; 0 0 0];  %chose the red, blue and black part of the colormap
 
 cmap = flip(cmap)
+%% plot sleep/wake charts for each of the experiments
+
 
 %plot sleep and activity, and average waking activity
 for j = 1:size(sleepStructure,2) %each experiment
@@ -210,7 +210,8 @@ for i = 1:size(sleepStructure,2) %each experiment
     figure('position', [25, 50, 1000, 500]);
     subplot (1,3,1)
     rectangle('Position', [0 0 4 2000], 'Facecolor', [0.95 0.95 0.95], 'Edgecolor', 'none');
-    h= plotSpread(sleep_d{i}, 'distributionColors', cmap, 'showMM', 2);   
+    h= plotSpread(sleep_d{i}, 'distributionColor', cmap);   
+    errorbar(nanmedian(sleep_d{i}), sem(sleep_d{i}'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
     ax=gca;   
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;   
@@ -225,7 +226,9 @@ for i = 1:size(sleepStructure,2) %each experiment
     
     subplot (1,3,2)
     rectangle('Position', [0 0 4 100], 'Facecolor', [0.95 0.95 0.95], 'Edgecolor', 'none');
-    h = plotSpread(sleepbout_d{i}, 'distributionColor', cmap, 'showMM', 2);
+    h = plotSpread(sleepbout_d{i}, 'distributionColor', cmap);
+    errorbar(nanmedian(sleepbout_d{i}), sem(sleepbout_d{i}'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
+
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;   
@@ -239,7 +242,9 @@ for i = 1:size(sleepStructure,2) %each experiment
     subplot (1,3,3)
      rectangle('Position', [0 0 4 150], 'Facecolor', [0.95 0.95 0.95],...
        'Edgecolor', 'none');
-    k= plotSpread(sleeplength_d{i}, 'distributionColor', cmap, 'showMM',2);
+    k= plotSpread(sleeplength_d{i}, 'distributionColor', cmap);
+    errorbar(nanmedian(sleeplength_d{i}), sem(sleeplength_d{i}'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
+
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;   
@@ -262,13 +267,13 @@ for i = 1:size(sleepStructure,2) %each experiment
    rectangle('Position', [0 0 4 2000], 'Facecolor', [0.9 0.9 0.9],...
        'Edgecolor', 'none');
     hold on;
-    l = plotSpread(sleep_n{i}, 'distributionColor', cmap, 'showMM',2);
+    l = plotSpread(sleep_n{i}, 'distributionColor', cmap);
+   errorbar(nanmedian(sleep_n{i}), sem(sleep_n{i}'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;   
     ax.FontSize = 14; 
     set(findall(gca, 'type', 'line'), 'markersize', 12) 
-
     l{2}(1).LineWidth = 2;
     l{2}(1).Color = [1 1 1];
     ylim([0 600]);
@@ -279,7 +284,9 @@ for i = 1:size(sleepStructure,2) %each experiment
     rectangle('Position', [0 0 4 100], 'Facecolor', [0.9 0.9 0.9],...
            'Edgecolor', 'none');
     hold on
-    m=plotSpread(sleepbout_n{i}, 'distributionColor', cmap, 'showMM',2);
+    m=plotSpread(sleepbout_n{i}, 'distributionColor', cmap);
+  errorbar(nanmedian(sleepbout_n{i}), sem(sleepbout_n{i}'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
+
     ax = gca;
     ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;   
@@ -294,7 +301,9 @@ for i = 1:size(sleepStructure,2) %each experiment
     rectangle('Position', [0 0 4 150], 'Facecolor', [0.9 0.9 0.9],...
        'Edgecolor', 'none');
     hold on
-    n=plotSpread(sleeplength_n{i}, 'distributionColor', cmap,'showMM',2);
+    n=plotSpread(sleeplength_n{i}, 'distributionColor', cmap);
+   errorbar(nanmedian(sleeplength_n{i}), sem(sleeplength_n{i}'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
+
     ax = gca;
      ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;   
@@ -320,8 +329,10 @@ for i = 1:size(sleepStructure,2) %each experiment
    subplot(1,2,1)
     rectangle ('Position', [0 0 4 14], 'Facecolor', [0.95 0.95 0.95],...
         'EdgeColor', 'none');
-   h=plotSpread(wactivity_d{i}, 'distributionColor', cmap, 'showMM',2);
-    ax = gca;
+   h=plotSpread(wactivity_d{i}, 'distributionColor', cmap);
+  errorbar(nanmedian(wactivity_d{i}), sem(wactivity_d{i}'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
+ 
+   ax = gca;
      ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;   
     ax.FontSize = 14; 
@@ -337,7 +348,8 @@ for i = 1:size(sleepStructure,2) %each experiment
     rectangle ('Position', [0 0 4 14], 'Facecolor', [0.9 0.9 0.9], ...
         'EdgeColor', 'none');
     hold on;
-    j=plotSpread(wactivity_n{i}, 'distributionColor', cmap, 'showMM',2);
+    j=plotSpread(wactivity_n{i}, 'distributionColor', cmap);
+  errorbar(nanmedian(wactivity_n{i}), sem(wactivity_n{i}'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
     ax = gca;
      ax.XTickLabel ={'WT', 'HET', 'HOM'};
     ax.XTickLabelRotation = 45;   
@@ -465,7 +477,9 @@ exp = repmat (exp, 1,3);
 [p, t, stats] = anovan(periodAll(:), {exp, group}, 'model', 'interaction')
 
 %now to make the figure
-j=plotSpread(periodAll, 'distributionColor', cmap, 'showMM',2);
+figure;
+plotSpread(periodAll, 'distributionColor', flip(cmap));
+errorbar(nanmedian(periodAll), sem(periodAll'), '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 2) 
 ax = gca;
 ax.XTickLabel = {'WT' 'Het' 'Hom'};
 ax.FontSize=12;

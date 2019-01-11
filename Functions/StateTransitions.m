@@ -666,11 +666,11 @@ function StateTransitions (folder, saveDir,names, ControlPos, cmap, ymaxD, ymaxN
             if kstest(stateAllD{s,d}(:)) == 1
                 [pd2(d,s), ~, stats] = kruskalwallis(stateAllD{s,d}, [], 'off');
                 pd_test(d,s) = 'k';
-                pd3{d,s} = multcompare(stats);
+                pd3{d,s} = multcompare(stats,  'ctype', 'dunn-sidak');
             else
                 pd2(d,s) = anovan(stateAllD{s,d},'display', 'off');
                 pd_test (d,s) ='a';
-                pd3{d,s} = multcompare(stats);
+                pd3{d,s} = multcompare(stats,  'ctype', 'dunn-sidak');
             end
         end
     end
@@ -683,11 +683,11 @@ function StateTransitions (folder, saveDir,names, ControlPos, cmap, ymaxD, ymaxN
             if kstest(stateAllN{s,d}(:)) == 1
                 [pn2(d,s), ~, stats] = kruskalwallis(stateAllN{s,d}, [], 'off');
                 pn_test(d,s) = 'k';
-                pn3{d,s} = multcompare(stats);
+                pn3{d,s} = multcompare(stats,  'ctype', 'dunn-sidak');
             else
                 pn2(d,s) = anovan(stateAllN{s,d},'display', 'off');
                 pn_test (d,s) ='a';
-                pn3{d,s} = multcompare(stats);
+                pn3{d,s} = multcompare(stats,  'ctype', 'dunn-sidak');
 
             end
         end
@@ -868,11 +868,11 @@ function StateTransitions (folder, saveDir,names, ControlPos, cmap, ymaxD, ymaxN
        for s=1:size(concatTransitionPlotN{d},3) %every state
             [pn4(s,d),~, stats] = kruskalwallis(concatTransitionPlotN{d}(:,:,s),...
                 [], 'off');
-            pn5 {s,d} = multcompare(stats);
+            pn5 {s,d} = multcompare(stats,  'ctype', 'dunn-sidak');
             clear stats
             [pd4(s,d), ~,stats] = kruskalwallis(concatTransitionPlotD{d}(:,:,s),...
                 [],'off');
-            pd5 {s,d} = multcompare(stats);
+            pd5 {s,d} = multcompare(stats,  'ctype', 'dunn-sidak');
             clear stats
        end
     end

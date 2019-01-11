@@ -2,7 +2,7 @@
 %and state transition figures
 
 clear
-
+addpath (genpath('C:\Users\ilbar\Documents\MATLAB\DreammistPaper'))
 %% normal LD
 foldir = uigetdir('', 'Select sleep.mat data folder');
 

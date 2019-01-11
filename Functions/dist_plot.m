@@ -21,11 +21,17 @@ function dist_plot(state_trans, no_subplots, cmap, labels, stats, filename, ymax
   
   %Output:
     %.eps an .fig saved into assigned folder
-figure('position', [25, 50, 1500, 500]);
+
+    %inline functiont to define sem
+    sem = @(x) ((nanstd(x'))./ sqrt(size(x,2))); %inline function for standard error of mean
+
+    figure('position', [25, 50, 1500, 500]);
 for s=1:no_subplots
         subplot (1,5,s)
         title (num2str(s-1))  
-        h= plotSpread(state_trans{s,3}, 'distributionColors', cmap, 'showMM', 2);   
+        h= plotSpread(state_trans{s,3}, 'distributionColors', cmap);   
+        errorbar(nanmedian(state_trans{s,3}), sem(state_trans{s,3}'), ...
+            '+', 'Color', [0.5 0.5 0.5], 'LineWidth', 1); 
         ax=gca;   
         ax.XTickLabel =labels;
         ax.XTickLabelRotation = 45;   
@@ -39,6 +45,7 @@ for s=1:no_subplots
 end
 print(filename, '-depsc', '-tiff')
 savefig(strcat(filename, '.fig'));
+saveas(gcf, strcat(filename, '.tiff'), 'tiff')
 %close;
 
 end
