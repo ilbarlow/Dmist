@@ -60,7 +60,8 @@ for j = 1:size(sleepStructure,2) %each experiment
    ax.XTick = LB(:,j);
    ax.XTickLabel = {'' '14' '0' '14' '0' '14' '0'};
    set(gca, 'Fontsize', 16);
-   ylim ([0 150])
+   ylim ([0 100])
+   xlim([LB(3,j) LB(7,j)])
    xlabel ('Zeitgeber time (hours)', 'Fontsize', 18);
    ylabel ('Average Activity (sec/10 mins)', 'Fontsize', 18)
 %    title(strcat('Average Activity', sleepStructure(j).name), 'Fontsize', 20)
@@ -132,7 +133,7 @@ for j = 1:size(sleepStructure,2) %each experiment
    for i= 1:size(sleepStructure(j).geno.geno.data,2) %each genotype
        shadedErrorBar_2(1:size(sleepStructure(j).geno.geno.tenminutetime,2),...
            smooth(nanmean(sleepStructure(j).geno.geno.avewakechart{i}(:,:)'),3),...
-           smooth(sem(sleepStructure(j).geno.geno.sleepchart{i}),3), {'Color', [cmap(i,:)]}, 'transparent'); %plot hour rolling average
+           smooth(sem(sleepStructure(j).geno.geno.avewakechart{i}),3), {'Color', [cmap(i,:)]}, 'transparent'); %plot hour rolling average
        key {i,1} = char(strcat(sleepStructure(j).geno.geno.name{i}, ',n=',...
            num2str(size(sleepStructure(j).geno.geno.data{i},2)))); %character array defines labels for legend - only need to do this once
        hold on
@@ -159,7 +160,7 @@ end
 
 %% zoom in plots
 %use e=1 as the example and zoom in wactivity
-j=4
+j=1
 figure
 for i =1:2:size(LB,1)-1
     rectangle ('Position', [LB(i,j) 0 (LB(i+1,j) - LB(i,j)) 15], 'Edgecolor', [1 1 1]);
@@ -174,7 +175,7 @@ end
 for i= 1:size(sleepStructure(j).geno.geno.data,2) %each genotype
    shadedErrorBar_2(1:size(sleepStructure(j).geno.geno.tenminutetime,2),...
        smooth(nanmean(sleepStructure(j).geno.geno.avewakechart{i}(:,:)'),3),...
-       smooth(sem(sleepStructure(j).geno.geno.sleepchart{i}),3), {'Color', [cmap(i,:)]}, 'transparent'); %plot hour rolling average
+       smooth(sem(sleepStructure(j).geno.geno.avewakechart{i}),3), {'Color', [cmap(i,:)]}, 'transparent'); %plot hour rolling average
    key {i,1} = char(strcat(sleepStructure(j).geno.geno.name{i}, ',n=',...
        num2str(size(sleepStructure(j).geno.geno.data{i},2)))); %character array defines labels for legend - only need to do this once
    hold on
@@ -223,13 +224,13 @@ ax = gca; %define axes ticks and labels
 ax.XTick = LB(:,j);
 ax.XTickLabel = {'' '14' '0' '14' '0' '14' '0'};
 set(gca, 'Fontsize', 16);
-ylim ([0 10])
+%ylim ([0 10])
 xlim([LB(3,j) LB(7,j)])
 xlabel ('Zeitgeber time (hours)', 'Fontsize', 18);
 ylabel ('Sleep (mins/10 mins)', 'Fontsize', 18)
 gcf;
 xlim ([LB(4,j), LB(5,j)]);
-ylim ([3 8]);
+ylim ([0 6]);
 savefig(gcf, fullfile(fileparts (folder),'expFigures', strcat(sleepStructure(j).name(1:6),...
    '_10minSleepZoomNight1.fig')));
 print(gcf, fullfile(fileparts(folder), 'expFigures', strcat(sleepStructure(j).name(1:6), ...

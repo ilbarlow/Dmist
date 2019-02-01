@@ -31,7 +31,7 @@ end
 %now add traces
 for i= 1:size(geno.data,2)
    shadedErrorBar_2(1:size(geno.tenminutetime,2), smooth(nanmean(geno.avewakechart{i}(:,:)'),3),...
-       smooth(sem(geno.avewakechart{i}(:,:)),3),{'Color', [cmap(i,:)]}, 'transparent');
+       smooth(sem(geno.avewakechart{i}(:,:)'),3),{'Color', [cmap(i,:)]}, 'transparent');
    key {i,1} = char(strcat(geno.name{i}, ',n=',...
        num2str(size(geno.data{i},2)))); %character array defines labels for legend - only need to do this once
    hold on
