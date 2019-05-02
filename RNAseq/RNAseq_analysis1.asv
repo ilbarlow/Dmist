@@ -287,8 +287,8 @@ statsresultsHomcomp = 'C:\Users\ilbar\Documents\MATLAB\RNAseq\RNAseq\DESeq-i8hom
 dataStatsWT = readtable(statsresultsWTcomp,'Delimiter', '\t');
 dataStatsHOM = readtable (statsresultsHomcomp, 'Delimiter', '\t');
 
-%shared genes between the two comparisons
-AlldiffGenesShared = intersect(dataStatsWT.Row_names, dataStatsHOM.Row_names);
+%shared gen
+diffGenesTotal = intersect(dataStatsWT.Row_names, dataStatsHOM.Row_names);
 
 %now to find the p values of all the genes in PC1 for WTs
 WTsigGenesPC1 = intersect(dataStatsWT.Row_names, rankPC1_genes);
