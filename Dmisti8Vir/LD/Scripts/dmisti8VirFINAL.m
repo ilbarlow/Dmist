@@ -29,7 +29,7 @@ Summary_Act(foldir, saveDiri8Vir, namesi8Vir, ControlPosi8Vir, cmapi8Vir)
 StateTransitions (foldir, saveDiri8Vir, namesi8Vir, ControlPosi8Vir, cmapi8Vir, ymaxD, ymaxN)
 
 %different names for cluster explanation
-namesi8Vir2 = {'WT' 'i8Het' 'virHet' 'doubleHom'};
+namesi8Vir2 = {'i8virWT' 'i8transHet' 'virtransHet' 'i8VirHom'};
 
 %Cluster explanation
 ClusterExplanation(foldir, saveDiri8Vir, namesi8Vir2, ControlPosi8Vir);

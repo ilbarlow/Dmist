@@ -31,7 +31,7 @@ for i = 1:size (sleepStructure,2)
     end
 end
 
-sem = @(x) ((nanstd(x'))./ sqrt(size(x,2))); %inline function for standard error of mean
+sem = @(x) (nanstd(x')./ sqrt(size(x,2))); %inline function for standard error of mean
 
 %set colormap for plotting data
 cmap = [1 0 0; 0 0 1; 0 0 0];  %chose the red, blue and black part of the colormap
@@ -41,44 +41,44 @@ cmap = flip(cmap)
 
 
 %plot sleep and activity, and average waking activity
-for j = 1:size(sleepStructure,2) %each experiment
-    figure
-    for i =1:2:size(LB,1)-1
-        rectangle ('Position', [LB(i,j) 0 (LB(i+1,j) - LB(i,j)) 200], 'Edgecolor', [0.95 0.95 0.95], 'Facecolor', [0.95 0.95 0.95]);
-        hold on
-    end
-    hold on
-    for i = 2:2:size(LB,1)-1
-        rectangle ('Position', [LB(i,j) 0 (LB(i+1,j) - LB(i,j)) 200], 'Facecolor', [0.9 0.9 0.9], 'Edgecolor', [1 1 1]); %plot dark boxes for night
-        hold on
-    end
-    %now add traces
-   for i= 1:size(sleepStructure(j).geno.geno.data,2) %each genotype
-       shadedErrorBar_2(1:size(sleepStructure(j).geno.geno.tenminutetime,2), nanmean(sleepStructure(j).geno.geno.tenminute{i}(:,:)'),...
-           sem(sleepStructure(j).geno.geno.tenminute{i}), {'Color', [cmap(i,:)]}, 'transparent');
-       key {i,1} = char(strcat(sleepStructure(j).geno.geno.name{i}, ',n=',...
-           num2str(size(sleepStructure(j).geno.geno.data{i},2)))); %character array defines labels for legend - only need to do this once
-       hold on
-   end 
-   ax = gca; %define axes ticks and labels
-   ax.XTick = LB(:,j);
-   ax.XTickLabel = {'' '14' '0' '14' '0' '14' '0'};
-   set(gca, 'Fontsize', 16);
-   ylim ([0 30])
-   xlabel ('Zeitgeber time (hours)', 'Fontsize', 18);
-   ylabel ('Average Activity (sec/10 mins)', 'Fontsize', 18)
-%    title(strcat('Average Activity', sleepStructure(j).name), 'Fontsize', 20)
-   savefig(gcf, fullfile(fileparts (folder),'FinalFigures', strcat(sleepStructure(j).name(1:6),...
-       'averageactivity.fig')));
-   print(gcf, fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(j).name(1:6), ...
-       '_averageactivity')), '-depsc')
-   saveas(gcf, fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(j).name(1:6),...
-       '_averageactivity1')),'tiff')
-   legend (key, 'Fontsize', 14) %adds legend
-   saveas(gcf, fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(j).name(1:6),...
-       '_averageactivity2')),'tiff')
+%for j = 1:size(sleepStructure,2) %each experiment
+%     figure
+%     for i =1:2:size(LB,1)-1
+%         rectangle ('Position', [LB(i,j) 0 (LB(i+1,j) - LB(i,j)) 200], 'Edgecolor', [0.95 0.95 0.95], 'Facecolor', [0.95 0.95 0.95]);
+%         hold on
+%     end
+%     hold on
+%     for i = 2:2:size(LB,1)-1
+%         rectangle ('Position', [LB(i,j) 0 (LB(i+1,j) - LB(i,j)) 200], 'Facecolor', [0.9 0.9 0.9], 'Edgecolor', [1 1 1]); %plot dark boxes for night
+%         hold on
+%     end
+%     %now add traces
+%    for i= 1:size(sleepStructure(j).geno.geno.data,2) %each genotype
+%        shadedErrorBar_2(1:size(geno.tenminutetime,2), smooth(nanmean(geno.avewakechart{i}(:,:)'),3),...
+%        smooth(sem(geno.avewakechart{i}(:,:)'),3),{'Color', [cmap(i,:)]}, 'transparent');
+%        key {i,1} = char(strcat(geno.name{i}, ',n=',...
+%            num2str(size(geno.data{i},2)))); %character array defines labels for legend - only need to do this once
+%        hold on
+%    end 
+%    ax = gca; %define axes ticks and labels
+%    ax.XTick = LB(:,j);
+%    ax.XTickLabel = {'' '14' '0' '14' '0' '14' '0'};
+%    set(gca, 'Fontsize', 16);
+%    ylim ([0 30])
+%    xlabel ('Zeitgeber time (hours)', 'Fontsize', 18);
+%    ylabel ('Average Activity (sec/10 mins)', 'Fontsize', 18)
+% %    title(strcat('Average Activity', sleepStructure(j).name), 'Fontsize', 20)
+%    savefig(gcf, fullfile(fileparts (folder),'FinalFigures', strcat(sleepStructure(j).name(1:6),...
+%        'averageactivity.fig')));
+%    print(gcf, fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(j).name(1:6), ...
+%        '_averageactivity')), '-depsc')
+%    saveas(gcf, fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(j).name(1:6),...
+%        '_averageactivity1')),'tiff')
+%    legend (key, 'Fontsize', 14) %adds legend
+%    saveas(gcf, fullfile(fileparts(folder), 'FinalFigures', strcat(sleepStructure(j).name(1:6),...
+%        '_averageactivity2')),'tiff')
 
-end
+%end
 
 %now the same for sleep
 for j = 1:size(sleepStructure,2) %each experiment
@@ -94,8 +94,10 @@ for j = 1:size(sleepStructure,2) %each experiment
     end
     %now add traces
    for i= 1:size(sleepStructure(j).geno.geno.data,2) %each genotype
-       shadedErrorBar_2(1:size(sleepStructure(j).geno.geno.tenminutetime,2), smooth(nanmean(sleepStructure(j).geno.geno.sleepchart{i}(:,:)'),3),...
-           smooth(sem(sleepStructure(j).geno.geno.sleepchart{i}),3), {'Color', [cmap(i,:)]}, 'transparent'); %plot hour rolling average
+       shadedErrorBar_2(1:size(sleepStructure(j).geno.geno.tenminutetime,2), ...
+           smooth(nanmean(sleepStructure(j).geno.geno.sleepchart{i}(:,:)'),3),...
+           smooth(sem(sleepStructure(j).geno.geno.sleepchart{i}(:,:)),3),...
+           {'Color', [cmap(i,:)]}, 'transparent');
        key {i,1} = char(strcat(sleepStructure(j).geno.geno.name{i}, ',n=',...
            num2str(size(sleepStructure(j).geno.geno.data{i},2)))); %character array defines labels for legend - only need to do this once
        hold on
@@ -135,9 +137,8 @@ for j = 1:size(sleepStructure,2) %each experiment
     end
     %now add traces
    for i= 1:size(sleepStructure(j).geno.geno.data,2) %each genotype
-       shadedErrorBar_2(1:size(sleepStructure(j).geno.geno.tenminutetime,2),...
-           smooth(nanmean(sleepStructure(j).geno.geno.avewakechart{i}(:,:)'),3),...
-           smooth(sem(sleepStructure(j).geno.geno.sleepchart{i}),3), {'Color', [cmap(i,:)]}, 'transparent'); %plot hour rolling average
+       shadedErrorBar_2(1:size(sleepStructure(j).geno.geno.tenminutetime,2), smooth(nanmean(sleepStructure(j).geno.geno.avewakechart{i}(:,:)'),3),...
+       smooth(sem(sleepStructure(j).geno.geno.avewakechart{i}(:,:)),3),{'Color', [cmap(i,:)]}, 'transparent');
        key {i,1} = char(strcat(sleepStructure(j).geno.geno.name{i}, ',n=',...
            num2str(size(sleepStructure(j).geno.geno.data{i},2)))); %character array defines labels for legend - only need to do this once
        hold on

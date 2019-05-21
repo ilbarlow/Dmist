@@ -46,7 +46,6 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
         end
     end
 
-    
     %make summary table of sleep parameters
     %for both experiments and look at day and night sleep architecture - only
         %for days two and three (ie complete days and nights)
@@ -99,22 +98,22 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
         Scaled{e,7} = NaN(max(nFish(e,:)), size(wActivityD{e},2));
         Scaled {e,8} = NaN(max(nFish(e,:)), size(wActivityN{e}, 2));
         for g=1:size(sleepStructure(e).geno.data,2) %every genotype is a column in the matrix(WT=1, het=2, Hom=3)
-            Scaled {e,1} (:,g) = (sleepD{e}(:,g)-nanmean(sleepD{e}(:,ControlPos)))/... %day sleep
-              nanmean(sleepD{e}(:,ControlPos));
-            Scaled {e,2} (:,g) = (sleepN{e}(:,g)-nanmean(sleepN{e}(:,ControlPos)))/...%night sleep
-              nanmean(sleepN{e}(:,ControlPos));
-            Scaled{e,3} (:,g)=(sleepBoutD{e}(:,g)-nanmean(sleepBoutD{e}(:,ControlPos)))/...
-              nanmean(sleepBoutD{e}(:,ControlPos));
-            Scaled{e,4}(:,g)=(sleepBoutN{e}(:,g)-nanmean(sleepBoutN{e}(:,ControlPos)))/...
-              nanmean(sleepBoutN{e}(:,ControlPos));
-            Scaled {e,5}(:,g) = (sleepLengthD{e}(:,g)-nanmean(sleepLengthD{e}(:,ControlPos)))/... 
-              nanmean(sleepLengthD{e}(:,ControlPos));
-            Scaled{e,6}(:,g)=(sleepLengthN{e}(:,g)-nanmean(sleepLengthN{e}(:,ControlPos)))/...
-              nanmean(sleepLengthN{e}(:,ControlPos));
-            Scaled{e,7}(:,g)=(wActivityD{e}(:,g)-nanmean(wActivityD{e}(:,ControlPos)))/...
-              nanmean(wActivityD{e}(:,ControlPos));
-            Scaled{e,8}(:,g)=(wActivityN{e}(:,g)-nanmean(wActivityN{e}(:,ControlPos)))/...
-              nanmean(wActivityN{e}(:,ControlPos));
+            Scaled {e,1} (:,g) = (sleepD{e}(:,g)-nanmedian(sleepD{e}(:,ControlPos)))/... %day sleep
+              nanmedian(sleepD{e}(:,ControlPos));
+            Scaled {e,2} (:,g) = (sleepN{e}(:,g)-nanmedian(sleepN{e}(:,ControlPos)))/...%night sleep
+              nanmedian(sleepN{e}(:,ControlPos));
+            Scaled{e,3} (:,g)=(sleepBoutD{e}(:,g)-nanmedian(sleepBoutD{e}(:,ControlPos)))/...
+              nanmedian(sleepBoutD{e}(:,ControlPos));
+            Scaled{e,4}(:,g)=(sleepBoutN{e}(:,g)-nanmedian(sleepBoutN{e}(:,ControlPos)))/...
+              nanmedian(sleepBoutN{e}(:,ControlPos));
+            Scaled {e,5}(:,g) = (sleepLengthD{e}(:,g)-nanmedian(sleepLengthD{e}(:,ControlPos)))/... 
+              nanmedian(sleepLengthD{e}(:,ControlPos));
+            Scaled{e,6}(:,g)=(sleepLengthN{e}(:,g)-nanmedian(sleepLengthN{e}(:,ControlPos)))/...
+              nanmedian(sleepLengthN{e}(:,ControlPos));
+            Scaled{e,7}(:,g)=(wActivityD{e}(:,g)-nanmedian(wActivityD{e}(:,ControlPos)))/...
+              nanmedian(wActivityD{e}(:,ControlPos));
+            Scaled{e,8}(:,g)=(wActivityN{e}(:,g)-nanmedian(wActivityN{e}(:,ControlPos)))/...
+              nanmedian(wActivityN{e}(:,ControlPos));
         end  
     end
     
@@ -165,22 +164,22 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
         Scaled2{e,7} = NaN(max(nFish(e,:)), size(wActivityD{e},2));
         Scaled2 {e,8} = NaN(max(nFish(e,:)), size(wActivityN{e}, 2));
         for g=1:size(sleepStructure(e).geno.data,2) %every genotype is a column in the matrix(WT=1, het=2, Hom=3)
-            Scaled2 {e,1} (:,g) = (norm_sleep_d{e}(:,g)-nanmean(norm_sleep_d{e}(:,ControlPos)))/... %day norm_sleep
-              nanmean(norm_sleep_d{e}(:,ControlPos));
-            Scaled2 {e,2} (:,g) = (norm_sleep_n{e}(:,g)-nanmean(norm_sleep_n{e}(:,ControlPos)))/...%night norm_sleep
-              nanmean(norm_sleep_n{e}(:,ControlPos));
-            Scaled2{e,3} (:,g)=(norm_sleepbout_d{e}(:,g)-nanmean(norm_sleepbout_d{e}(:,ControlPos)))/...
-              nanmean(norm_sleepbout_d{e}(:,ControlPos));
-            Scaled2{e,4}(:,g)=(norm_sleepbout_n{e}(:,g)-nanmean(norm_sleepbout_n{e}(:,ControlPos)))/...
-              nanmean(norm_sleepbout_n{e}(:,ControlPos));
-            Scaled2 {e,5}(:,g) = (norm_sleeplength_d{e}(:,g)-nanmean(norm_sleeplength_d{e}(:,ControlPos)))/... 
-              nanmean(norm_sleeplength_d{e}(:,ControlPos));
-            Scaled2{e,6}(:,g)=(norm_sleeplength_n{e}(:,g)-nanmean(norm_sleeplength_n{e}(:,ControlPos)))/...
-              nanmean(norm_sleeplength_n{e}(:,ControlPos));
-            Scaled2{e,7}(:,g)=(norm_wactivity_d{e}(:,g)-nanmean(norm_wactivity_d{e}(:,ControlPos)))/...
-              nanmean(norm_wactivity_d{e}(:,ControlPos));
-            Scaled2{e,8}(:,g)=(norm_wactivity_n{e}(:,g)-nanmean(norm_wactivity_n{e}(:,ControlPos)))/...
-              nanmean(norm_wactivity_n{e}(:,ControlPos));
+            Scaled2 {e,1} (:,g) = (norm_sleep_d{e}(:,g)-nanmedian(norm_sleep_d{e}(:,ControlPos)))/... %day norm_sleep
+              nanmedian(norm_sleep_d{e}(:,ControlPos));
+            Scaled2 {e,2} (:,g) = (norm_sleep_n{e}(:,g)-nanmedian(norm_sleep_n{e}(:,ControlPos)))/...%night norm_sleep
+              nanmedian(norm_sleep_n{e}(:,ControlPos));
+            Scaled2{e,3} (:,g)=(norm_sleepbout_d{e}(:,g)-nanmedian(norm_sleepbout_d{e}(:,ControlPos)))/...
+              nanmedian(norm_sleepbout_d{e}(:,ControlPos));
+            Scaled2{e,4}(:,g)=(norm_sleepbout_n{e}(:,g)-nanmedian(norm_sleepbout_n{e}(:,ControlPos)))/...
+              nanmedian(norm_sleepbout_n{e}(:,ControlPos));
+            Scaled2 {e,5}(:,g) = (norm_sleeplength_d{e}(:,g)-nanmedian(norm_sleeplength_d{e}(:,ControlPos)))/... 
+              nanmedian(norm_sleeplength_d{e}(:,ControlPos));
+            Scaled2{e,6}(:,g)=(norm_sleeplength_n{e}(:,g)-nanmedian(norm_sleeplength_n{e}(:,ControlPos)))/...
+              nanmedian(norm_sleeplength_n{e}(:,ControlPos));
+            Scaled2{e,7}(:,g)=(norm_wactivity_d{e}(:,g)-nanmedian(norm_wactivity_d{e}(:,ControlPos)))/...
+              nanmedian(norm_wactivity_d{e}(:,ControlPos));
+            Scaled2{e,8}(:,g)=(norm_wactivity_n{e}(:,g)-nanmedian(norm_wactivity_n{e}(:,ControlPos)))/...
+              nanmedian(norm_wactivity_n{e}(:,ControlPos));
         end 
     end  
             %make final cell array that contains scaled data for day sleep, and sleep
@@ -189,7 +188,7 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
     for e=1:size(sleepStructure,2);
        finalScaled {e,1} = Scaled2 {e,1}; %day sleep
        finalScaled{e,2} = Scaled{e,2}; %night sleep
-       finalScaled{e,3} = Scaled{e,3}; %day sleep bout
+       finalScaled{e,3} = Scaled2{e,3}; %day sleep bout
        finalScaled{e,4} = Scaled{e,4}; %night sleep bout
        finalScaled{e,5} = Scaled2{e,5}; %day sleep bout length
        finalScaled{e,6} = Scaled2{e,6}; %night sleep bout length

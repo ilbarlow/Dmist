@@ -145,7 +145,7 @@ function ClusterExplanation(folder, saveDir,names, ControlPos)
     r = cell(size(sleepStructure,2), size(wake_day_clusters,3)); %cumvar cutoff
     KD = NaN (size(sleepStructure,2), size(wake_day_clusters,3)); %K means cut off
     
-    K = NaN(2); %matrix to decide number of clusters
+    K = NaN(2,1); %matrix to decide number of clusters
     
     %day first
     for e=1:size(sleepStructure,2) %for every experiment
@@ -224,7 +224,7 @@ function ClusterExplanation(folder, saveDir,names, ControlPos)
        end
     end
      
-    K(2)=max(KN(:)); %day time K
+    K(2)=max(KN(:)); %night time K
     
     %make the day and night figure
     figure;
@@ -466,19 +466,22 @@ function ClusterExplanation(folder, saveDir,names, ControlPos)
     %first do indexing to find corresponding activity and clusters
 
     clear scrap
+    Cluster_valsN = cell(size(sleepStructure,2),size(sleepStructure(e).geno.data,2),...
+        3);
+    Cluster_valsD = cell(size(sleepStructure,2),size(sleepStructure(e).geno.data,2),...
+        3);
     for e=1:size(sleepStructure,2) %every experiment
 
         for d=1:3 %every day and night and combined
 
             for g=1:size(sleepStructure(e).geno.data,2) %every genotype
-
                     for k = 1:K(1)+1 %every cluster     
 
                         scrap = ClusterRefsN2{e,g,d}==k; %find corresponding clusters  
                         scrap2 = ClusterRefsD2{e,g,d}==k;
-
-                        Cluster_valsN{e,g,d,k} = wake_night3{e,g,d}(scrap); %index activity values
-                        Cluster_valsD{e,g,d,k} = wake_day3{e,g,d}(scrap2);
+                        
+                        Cluster_valsN{e,g,k}(1:size(wake_night3{e,g,d}(scrap),1),d) = wake_night3{e,g,d}(scrap); %index activity values
+                        Cluster_valsD{e,g,k}(1:size(wake_day3{e,g,d}(scrap2),1),d) = wake_day3{e,g,d}(scrap2);
 
                         clear scrap scrap2
                     end
@@ -486,73 +489,88 @@ function ClusterExplanation(folder, saveDir,names, ControlPos)
         end
 
     end
-
+    
     %now need to find min and max values for each of the clusters
+    mean_clustersD = cell(1,5);
+    mean_clustersN = cell(1, 5);
+    std_clustersD = cell(1, 5);
+    std_clustersN = cell(1, 5);
     for e=1:size(sleepStructure,2)
 
         for g=1:size(Cluster_valsN,2)
 
-            for d=1:size(Cluster_valsN,3)
+            for d=3
 
-               for k=1:K(1)+1
+                Cluster_valsD{e,g,k}(Cluster_valsD{e,g,k}==0)=NaN;
+                Cluster_valsN{e,g,k}(Cluster_valsN{e,g,k}==0) = NaN;
 
-                   mins_clustersN{e,k}(g,d) = min(Cluster_valsN{e,g,d,k});
-                    max_clustersN{e,k}(g,d) = max(Cluster_valsN{e,g,d,k});
-                    mean_clustersN{e,k}(g,d) = nanmean(Cluster_valsN{e,g,d,k});
-                    std_clustersN{e,k}(g,d) = nanstd(Cluster_valsN{e,g,d,k});
+                    for k=1:size(Cluster_valsN,3)
+%                     mins_clustersN{e,k}(g,d) = min(Cluster_valsN{e,g,d,k});
+%                     max_clustersN{e,k}(g,d) = max(Cluster_valsN{e,g,d,k});
+                    mean_clustersN{k}(e,g) = nanmean(Cluster_valsN{e,g,k}(:,d));
+                    std_clustersN{k}(e,g) = nanstd(Cluster_valsN{e,g,k}(:,d));
 
-                    mins_clustersD{e,k}(g,d) = min(Cluster_valsD{e,g,d,k});
-                    max_clustersD{e,k}(g,d) = max(Cluster_valsD{e,g,d,k});
-                    mean_clustersD{e,k}(g,d) = nanmean(Cluster_valsD{e,g,d,k});
-                    std_clustersD{e,k}(g,d) = nanstd(Cluster_valsD{e,g,d,k});
-
-
-            end
+%                     mins_clustersD{e,k}(g,d) = min(Cluster_valsD{e,g,d,k});
+%                     max_clustersD{e,k}(g,d) = max(Cluster_valsD{e,g,d,k});
+                    mean_clustersD{k}(e,g) = nanmean(Cluster_valsD{e,g,k}(:,d));
+                    std_clustersD{k}(e,g) = nanstd(Cluster_valsD{e,g,k}(:,d));
+                    end
             end
         end
     end
 
-    %now just find the min min and max max from all experiments for each
-    %genotype
-    for g=1:size(ClusterRefsN2,2) %every genotype
+    %find the mean and standard deviation for all experiments, each geno and every cluster
+    for k=1:size(mean_clustersD,2) %every cluster
 
-        for k=1:K(1)+1
-
-            min_allN{g}(:,k) = min(cell2mat(mins_clustersN(g,k)))';
-            max_allN{g}(:,k) = max(cell2mat(max_clustersN(g,k)))';
-            mean_allN{g}(:,k) = nanmean(cell2mat(mean_clustersN(g,k)))';
-            std_allN {g}(:,k) = nanstd(cell2mat(std_clustersN(g,k)))';
-
-            min_allD{g}(:,k) = min(cell2mat(mins_clustersD(g,k)))';
-            max_allD{g}(:,k) = max(cell2mat(max_clustersD(g,k)))';
-            mean_allD{g}(:,k) = nanmean(cell2mat(mean_clustersD(g,k)))';
-            std_allD {g}(:,k) = nanstd(cell2mat(std_clustersD(g,k)))';
-
+        for g=1:size(mean_clustersD{k},2)
+            mean_allN(k,g) = nanmean(mean_clustersN{k}(:,g));
+            mean_allD(k,g) = nanmean(mean_clustersD{k}(:,g));
+            
+            std_allN(k,g) = nanmean(std_clustersN{k}(:,g));
+            std_allD(k,g) = nanmean(std_clustersD{k}(:,g));
+            
         end
-            %replace zeros for sleep
-            scrap = isnan(min_allN{g});
-            min_allN{g}(scrap) = 0;
-            max_allN{g}(scrap) = 0;
-            mean_allN{g}(scrap) = 0;
-            std_allN{g}(scrap) = 0;
-
-            min_allD{g}(scrap) = 0;
-            max_allD{g}(scrap) = 0;
-            mean_allD{g}(scrap) = 0;
-            std_allD{g}(scrap) = 0;
-            clear scrap
     end
     
+
+% %             min_allN{g}(:,k) = min(cell2mat(mins_clustersN(g,k)))';
+% %             max_allN{g}(:,k) = max(cell2mat(max_clustersN(g,k)))';
+%             mean_allN{k} = nanmean(cell2mat(mean_clustersN(g,k)))';
+%             std_allN {g}(:,k) = nanstd(cell2mat(std_clustersN(g,k)))';
+% 
+%             min_allD{g}(:,k) = min(cell2mat(mins_clustersD(g,k)))';
+%             max_allD{g}(:,k) = max(cell2mat(max_clustersD(g,k)))';
+%             mean_allD{g}(:,k) = nanmean(cell2mat(mean_clustersD(g,k)))';
+%             std_allD {g}(:,k) = nanstd(cell2mat(std_clustersD(g,k)))';
+% 
+%         end
+%             %replace zeros for sleep
+%             scrap = isnan(min_allN{g});
+%             min_allN{g}(scrap) = 0;
+%             max_allN{g}(scrap) = 0;
+%             mean_allN{g}(scrap) = 0;
+%             std_allN{g}(scrap) = 0;
+% 
+%             min_allD{g}(scrap) = 0;
+%             max_allD{g}(scrap) = 0;
+%             mean_allD{g}(scrap) = 0;
+%             std_allD{g}(scrap) = 0;
+%             clear scrap
+%     end
+  %%  
     %save the mean cluster values
     states = {'state1' 'state2' 'state3'  'state4' 'state5'};
+   
+    delete(fullfile(saveDir, 'meanClusterActivityDay.xls'));
+    delete(fullfile(saveDir, 'meanClusterActivityNight.xls'));
     for s=1:size(mean_clustersD,2)
         %every columns of sheet is genotype as designated by names
-       xlswrite(fullfile(saveDir, 'meanClusterActivityDay.xls'),...
-           cell2mat(mean_clustersD(:,s)), states{s});
-       xlswrite(fullfile(saveDir, 'meanClusterActivityNight.xls'),...
-           cell2mat(mean_clustersN(:,s)), states{s});
+       writetable(array2table(mean_clustersD{s},'VariableNames', names), ...
+           fullfile(saveDir, 'meanClusterActivityDay.xls'), 'sheet', states{s});
+       writetable(array2table(mean_clustersN{s},'VariableNames', names), ...
+           fullfile(saveDir, 'meanClusterActivityNight.xls'), 'sheet', states{s});    
     end
-
+    
     %find percentage of time spent in each cluster
     for e=1:size(sleepStructure,2) %every experiment
 
@@ -604,13 +622,13 @@ function ClusterExplanation(folder, saveDir,names, ControlPos)
     txtD (2,:)=nanstd(cell2mat(cluster_meansD),[],2)*100';
     txtN(2,:) = nanstd(cell2mat(cluster_meansN), [],2)*100';
     
-    pos (1,:) = nanmean(cell2mat(mean_allD'));
-    pos(2,:) = nanmean(cell2mat(mean_allN'));
+    pos (1,:) = mean_allD(:,1);
+    pos(2,:) = mean_allN(:,1);
     
     figure;
-    errorbar (nanmean(cell2mat(mean_allD')), nanmean(cell2mat(std_allD')), 'Linewidth', 2, 'color', 'b');
+    errorbar (mean_allD(:,1), std_allD(:,1), 'Linewidth', 2, 'color', 'b');
     hold on
-    errorbar (nanmean(cell2mat(mean_allN')), nanmean(cell2mat(std_allN')), 'Linewidth', 2, 'color', 'k');
+    errorbar (mean_allN(:,1), std_allN(:,1), 'Linewidth', 2, 'color', 'k');
     for k=1:5
        text(k-0.25, pos(1,k)+1, strcat(num2str(txtD(1,k)), '+/-',...
            num2str(txtD(2,k))), 'color', 'b');

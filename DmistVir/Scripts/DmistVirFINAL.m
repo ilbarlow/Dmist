@@ -2,9 +2,9 @@
 %and state transition figures
 clear;
 
-foldir = uigetdir('', 'Select sleep.mat data folder');
+foldir ='C:\Users\ilbar\Documents\MATLAB\DreammistPaper\DmistVir\IdaExpsLD\RawData';
 
-saveDirVir = uigetdir('', 'Select folder to save figures');
+saveDirVir ='C:\Users\ilbar\Documents\MATLAB\DreammistPaper\DmistVir\IdaExpsLD\FinalFigures';
 
 namesVir = {'dmist^{+/+}' 'dmist^{vir/+}' 'dmist^{vir/vir}'};
 
@@ -26,8 +26,9 @@ Summary_Act(foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir, ymaxD, ymaxN)
 
 %make new names file for Vir
-namesVir2 = {'WT' 'HET' 'HOM'};
+namesVir2 = {'virWT' 'virHet' 'virHom'};
 
+warning('off','all')
 %Clustering explanation
 ClusterExplanation(foldir, saveDirVir, namesVir2, ControlPosVir);
 
@@ -35,9 +36,9 @@ ClusterExplanation(foldir, saveDirVir, namesVir2, ControlPosVir);
 %% LL
 clearvars -except cmapVir ControlPosVir namesVir namesVir2 ymaxD ymaxN
 
-foldir = uigetdir('', 'Select sleep.mat data folder');
+foldir = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\DmistVir\LL\RawData';
 
-saveDirVir = uigetdir('', 'Select folder to save figures');
+saveDirVir = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\DmistVir\LL\FinalFigures';
 
 %Summary figures
 Summary (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
@@ -54,9 +55,9 @@ ClusterExplanation(foldir, saveDirVir, namesVir2, ControlPosVir);
 %% DD
 clearvars -except cmapVir ControlPosVir namesVir namesVir2
 
-foldir = uigetdir('', 'Select sleep.mat data folder');
+foldir = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\DmistVir\DD\RawData';
 
-saveDirVir = uigetdir('', 'Select folder to save figures');
+saveDirVir = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\DmistVir\DD\FinalFigures';
 
 ymaxD = [0.8 0.6 0.6 0.6 0.6];
 ymaxN = [1 0.6 0.6 0.6 0.6];

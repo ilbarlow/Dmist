@@ -2,11 +2,12 @@
 %and state transition figures
 
 clear
+warning('off','all')
 addpath (genpath('C:\Users\ilbar\Documents\MATLAB\DreammistPaper'))
 %% normal LD
-foldir = uigetdir('', 'Select sleep.mat data folder');
+foldir = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\Dmisti8\LD\RawData';
 
-saveDiri8 = uigetdir('', 'Select folder to save figures');
+saveDiri8 = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\Dmisti8\LD\Figures';
 
 namesi8 = {'dmist^{i8/i8}' 'dmist^{i8/+}' 'dmist^{+/+}'};
 
@@ -28,18 +29,16 @@ Summary_Act(foldir, saveDiri8, namesi8, ControlPosi8, cmapi8)
 StateTransitions (foldir, saveDiri8, namesi8, ControlPosi8, cmapi8, ymaxD, ymaxN);
 
 %names2 for clustering
-namesi82 = {'HOM' 'HET' 'WT'};
+namesi82 = {'i8Hom' 'i8Het' 'i8WT'};
 
 %Cluster values
 ClusterExplanation(foldir, saveDiri8, namesi82, ControlPosi8);
 
-
 %% LL 
 clearvars -except cmapi8 namesi8 ControlPosi8 namesi82 ymaxD ymaxN
 
-foldir = uigetdir('', 'Select sleep.mat data folder');
-
-saveDiri8 = uigetdir('', 'Select folder to save figures');
+foldir =  'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\Dmisti8\LL\RawData'
+saveDiri8 = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\Dmisti8\LL\Figures';
 
 %Summary figures
 Summary (foldir, saveDiri8, namesi8, ControlPosi8, cmapi8)
@@ -57,10 +56,10 @@ ClusterExplanation(foldir, saveDiri8, namesi82, ControlPosi8);
 %% DD
 clearvars -except cmapi8 namesi8 namesi82 ControlPosi8
 
-foldir = uigetdir('', 'Select sleep.mat data folder');
+foldir = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\Dmisti8\DD\RawData';
 
-saveDiri8 = uigetdir('', 'Select folder to save figures');
-
+saveDiri8 = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper\Dmisti8\DD\Figures';
+ 
 ymaxD = [0.8 0.6 0.6 0.6 0.6];
 ymaxN = [1 0.6 0.6 0.6 0.6];
 

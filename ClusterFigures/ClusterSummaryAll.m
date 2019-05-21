@@ -9,16 +9,17 @@ topfolder = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper'
 %look for ClusterPercentagesDay, ClusterPercentagesNight,
 %meanClusterActivityDay, meanClusterActivityNight
 
-%go through finding the xls spreadsheets from 
+%go through finding the xls spreadsheets from ClusterExplanation.m
+% ClusterNameD = cell
 for i=1:size(fileNames,1)
     for j=1:size(fileNames{i},1)
         
         %daytime
-         if endsWith(fileNames{i}(j), 'ClusterPercentagesDay.xls')==1
-            ClusterNameD{i,j} = fullfile(pathNames{i}, fileNames{i}(j));
-            [~, sheets] = xlsfinfo(fullfile(pathNames{i}, fileNames{i}{j}));
+         if endsWith(fileNames{i}(j), 'ClusterPercentagesDay.xls')
+            loadFile = fullfile(pathNames{i}, fileNames{i}(j));
+            [~, sheets] = xlsfinfo(fullfile(loadFile{1}));
             for k=1:size(sheets,2)
-                ClusterNameD{i,j} = sheets{k};
+                ClusterNameD{i,j,k} = sheets{k};
                 if ~isempty(strfind(pathNames{i}, 'LD'))
                     LDdataPercentD{i,j,k} = xlsread(fullfile(pathNames{i},...
                         fileNames{i}{j}), sheets{k});
