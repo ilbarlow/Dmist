@@ -107,15 +107,12 @@ for l=1:size(light_conditions,2)
     ylabel ('Percentage time in state')
     xlabel ('State')
     clear Leg
-    xticks(1:1:5);
-    ylim([0 100]);
+    print(gcf, fullfile(topfolder, 'NightPercentClusterTimeValues'), '-depsc');
+    savefig(gcf, fullfile(topfolder, 'NightPercentClusterTimeValues.fig'));
+    saveas(gcf, fullfile(topfolder, 'NightPercentClusterTimeValues'), 'tiff');
 end
-print(gcf, fullfile(topfolder, 'NightPercentClusterTimeValues'), '-depsc');
-savefig(gcf, fullfile(topfolder, 'NightPercentClusterTimeValues.fig'));
-saveas(gcf, fullfile(topfolder, 'NightPercentClusterTimeValues'), 'tiff');
 
-
-%Day time plots
+%Night time plots
 figure;
 for l=1:size(light_conditions,2)
     subplot(1,3,l)
@@ -130,16 +127,15 @@ for l=1:size(light_conditions,2)
         box off;
     end
     legend(Leg)
-    xticks([1:1:5]);
-    ylim([0 100]);
     title (strcat('Day time percentages in ', light_conditions{l}));
     ylabel ('Percentage time in state')
     xlabel ('State')
     clear Leg
 end
-print(gcf, fullfile(topfolder, 'DayPercentClusterTimeValues'), '-depsc');
-savefig(gcf, fullfile(topfolder, 'DayPercentClusterTimeValues.fig'));
-saveas(gcf, fullfile(topfolder, 'DayPercentClusterTimeValues'), 'tiff');
+
+    print(gcf, fullfile(topfolder, 'DayPercentClusterTimeValues'), '-depsc');
+    savefig(gcf, fullfile(topfolder, 'DayPercentClusterTimeValues.fig'));
+    saveas(gcf, fullfile(topfolder, 'DayPercentClusterTimeValues'), 'tiff');
 
 %% now load the meanActivity values
 % Activity values are in a spreadsheet with each tab as a state and columns
