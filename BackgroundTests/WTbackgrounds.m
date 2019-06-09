@@ -108,7 +108,7 @@ zsc = @(x) ((x - nanmean(x))/nanstd(x));
 %now can actually organise
 features = cell(8,1);
 bg = cell(3,1);
-featuresNames = {'Day sleep' 'Night sleep' '# Day sleep bouts' '#Night sleep bouts'...
+featuresNames = {'Day sleep' 'Night sleep' 'Day sleep bouts' '#Night sleep bouts'...
     'Day sleep bout length' 'Night sleep bout length' 'Day wactivity' 'night wactivity'};
 for i=1:size(sleepD,1)
    temp = cell2mat(sleepD(i,:)');

@@ -497,7 +497,22 @@ end
 writetable(i8P, fullfile(pathname, 'i8Overlapstats.xls'));
 writetable(virP, fullfile(pathname, 'virOverlapstats.xls'));
 
-%make a table to export of just the sig genes, score in PC1 and adjusted P
+%% Find the hybrigenics genes and neuronal markers
+
+hybrigenics = {'opn1sw2' 'opn1lw2' 'rtn1b' 'rft1' 'cx30.3' 'cx27.5' 'cldnb'...
+    'cldne' 'cldnh' 'aqp9'};
+hybrigenics2= {'ENSDARG00000017274' 'ENSDARG00000044861' 
+
+hybrigenVir = table;
+hybrigeni8 = table;
+for i =1:size(hybrigenics,2)
+    hybrigeni8 = [hybrigeni8; dataStatsi8(find(strcmp(dataStatsi8.name, hybrigenics{i})),:)];
+    hybrigenVir = [hybrigenVir; dataStatsVIR(find(strcmp(dataStatsVIR.name, hybrigenics{i})),:)];
+end
+
+%%
+
+%make a table to export just the sig genes, score in PC1 and adjusted P
 %value
 GeneT = cell(size(i8sigGenesPC1,1),1);
 nameT = cell(size(i8sigGenesPC1,1),1);
@@ -590,5 +605,7 @@ statPC2 = table(GeneT, nameT, AdjPv, PC2);
 VIRstatPC2 = sortrows(statPC2, {'PC2'}, {'descend'});
 writetable (statPC2, fullfile(pathname, 'PC2genestatsVIR.xlsx'));
 clear nameT GeneT AdjPv PC2
+
+%% Find the hybrigenics genes and neuronal markers
 
 

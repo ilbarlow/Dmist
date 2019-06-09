@@ -1,7 +1,7 @@
 %script to combine all the clustering activity values and percentages to
 %make one plot
 tic
-
+addpath(genpath('C:\Users\ilbar\Documents\MATLAB\DreammistPaper'));
 topfolder = 'C:\Users\ilbar\Documents\MATLAB\DreammistPaper'
 
 [pathNames, dirNames, fileNames] = dirwalk(topfolder);
@@ -60,7 +60,7 @@ for i=1:size(fileNames,1)
         if endsWith(fileNames{i}(j), 'meanClusterActivityDay.xls') == 1
             [~, sheets] = xlsfinfo(fullfile(pathNames{i}, fileNames{i}{j}));
             for k=1:size(sheets,2)
-               if sheets{k} == 'Sheet1'
+               if sheets{k} == 'Sheet*'
                    continue
                else
                    fnActD {i,k} = {fullfile(pathNames{i}, fileNames{i}{j}), sheets{k}};
@@ -72,7 +72,7 @@ for i=1:size(fileNames,1)
         if endsWith(fileNames{i}(j), 'meanClusterActivityNight.xls') == 1
         [~, sheets] = xlsfinfo(fullfile(pathNames{i}, fileNames{i}{j}));
         for k=1:size(sheets,2)
-           if sheets{k} == 'Sheet1'
+           if sheets{k} == 'Sheet*'
                continue
            else
                fnActN {i,k} = {fullfile(pathNames{i}, fileNames{i}{j}), sheets{k}};
@@ -104,6 +104,7 @@ ClusterNameN = ClusterNameN(~cellfun('isempty', ClusterNameN));
 fnActN = fnActN(~cellfun('isempty', fnActN));
 actMeanN = actMeanN(~cellfun('isempty', actMeanN));
 
+sheets = sheets(~cellfun('strfind', 'Sheet*'))
 toc
 
 %% plot the errorbar figures

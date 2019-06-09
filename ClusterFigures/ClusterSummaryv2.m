@@ -99,7 +99,7 @@ for l=1:size(light_conditions,2)
             nanstd(dataPercentN.(light_conditions{l}).(genoNames{w}),0,2)*100,...
             'Color', cmap.(genoNames{w}), 'LineWidth', 2);
         hold on;
-        Leg{w} = genoNames{w};
+        Leg{w} = strcat(genoNames{w}, ', N=', num2str(size(dataPercentN.(light_conditions{l}).(genoNames{w}),2))) ;
         box off;
     end
     legend(Leg)
@@ -114,7 +114,6 @@ print(gcf, fullfile(topfolder, 'NightPercentClusterTimeValues'), '-depsc');
 savefig(gcf, fullfile(topfolder, 'NightPercentClusterTimeValues.fig'));
 saveas(gcf, fullfile(topfolder, 'NightPercentClusterTimeValues'), 'tiff');
 
-
 %Day time plots
 figure;
 for l=1:size(light_conditions,2)
@@ -126,7 +125,7 @@ for l=1:size(light_conditions,2)
             nanstd(dataPercentD.(light_conditions{l}).(genoNames{w}),0,2)*100,...
             'Color', cmap.(genoNames{w}), 'LineWidth', 2);
         hold on;
-        Leg{w} = genoNames{w};
+        Leg{w} = strcat(genoNames{w}, ', N=', num2str(size(dataPercentD.(light_conditions{l}).(genoNames{w}),2))) ;
         box off;
     end
     legend(Leg)
@@ -140,6 +139,82 @@ end
 print(gcf, fullfile(topfolder, 'DayPercentClusterTimeValues'), '-depsc');
 savefig(gcf, fullfile(topfolder, 'DayPercentClusterTimeValues.fig'));
 saveas(gcf, fullfile(topfolder, 'DayPercentClusterTimeValues'), 'tiff');
+
+
+%do the stats for the day
+nstates = 5;
+for l=1:size(light_conditions,2)
+    genoNames = fieldnames(dataPercentD.(light_conditions{l}));
+    genoNames = genoNames(~cellfun(@isempty,regexp(genoNames,'WT')));
+    temp = 1;
+    genos=[]
+    genos2 =[]
+    for g=1:size(genoNames,1)
+        genos(1:size(dataPercentD.(light_conditions{l}).(genoNames{g}),2)) = temp
+        genos2 = [genos2; genos'];
+        temp = temp+1
+        clear genos
+    end
+
+        dataMat =[]
+        for s=1:nstates
+            data = []
+            for g=1:size(genoNames,1)
+                data = [data dataPercentD.(light_conditions{l}).(genoNames{g})(s,:)]
+            end
+            dataMat = [dataMat; data];
+        
+            [p,tbl,stats] = anovan(dataMat(s,:), genos2,'display', 'off');
+            P{l,s}=multcompare(stats);
+            
+        end
+end
+
+%save this output to an excel sheet
+for l = 1:size(P,1)
+    for s =1:nstates
+        xlswrite(fullfile(topfolder, strcat(light_conditions{l}, 'dayPercentStats.xls')),...
+            P{l,s}, s);
+    end
+end
+
+%and the same for the night
+nstates = 5;
+clear P
+for l=1:size(light_conditions,2)
+    genoNames = fieldnames(dataPercentN.(light_conditions{l}));
+    genoNames = genoNames(~cellfun(@isempty,regexp(genoNames,'WT')));
+    temp = 1;
+    genos=[]
+    genos2 =[]
+    for g=1:size(genoNames,1)
+        genos(1:size(dataPercentN.(light_conditions{l}).(genoNames{g}),2)) = temp
+        genos2 = [genos2; genos'];
+        temp = temp+1
+        clear genos
+    end
+
+        dataMat =[]
+        for s=1:nstates
+            data = []
+            for g=1:size(genoNames,1)
+                data = [data dataPercentN.(light_conditions{l}).(genoNames{g})(s,:)]
+            end
+            dataMat = [dataMat; data];
+        
+            [p,tbl,stats] = anovan(dataMat(s,:), genos2,'display', 'off');
+            P{l,s}=multcompare(stats);
+            
+        end
+end
+
+%save this output to an excel sheet
+for l = 1:size(P,1)
+    for s =1:nstates
+        xlswrite(fullfile(topfolder, strcat(light_conditions{l}, 'nightPercentStats.xls')),...
+            P{l,s}, s);
+    end
+end
 
 %% now load the meanActivity values
 % Activity values are in a spreadsheet with each tab as a state and columns
@@ -188,8 +263,9 @@ for i=1:size(DayAct,1)
     end
 end
 
+figure;
 for l=1:size(light_conditions,2)
-    figure;
+    subplot(1,3,l);
     genos =fieldnames(DActValues.(light_conditions{l}));
     for i=1:size(genos,1)
        errorbar(nanmean(DActValues.(light_conditions{l}).(genos{i})),...
@@ -198,11 +274,16 @@ for l=1:size(light_conditions,2)
        hold on;
        Leg{i} = genos{i};
     end
-    title(strcat(light_conditions{l}, ' at night'))
+    title(strcat(light_conditions{l}, ' during day'))
     legend(Leg)
+    xticks([1:1:5]);
+    ylim([0 18]);
     box off
     clear Leg
 end
+print(gcf, fullfile(topfolder, 'DayActivityValues'), '-depsc');
+savefig(gcf, fullfile(topfolder, 'DayActivityValues.fig'));
+saveas(gcf, fullfile(topfolder, 'DayActivityValues'), 'tiff');
 
 %and for night time
 %Load the Activity values into a structure
@@ -247,9 +328,9 @@ for i=1:size(NightAct,1)
     end
 end
 
-light_conditions = fieldnames(NActValues);
-for l=1:size(light_conditions,1)
-    figure;
+figure;
+for l=1:size(light_conditions,2)
+    subplot(1,3,l);
     genos =fieldnames(NActValues.(light_conditions{l}));
     for i=1:size(genos,1)
        errorbar(nanmean(NActValues.(light_conditions{l}).(genos{i})),...
@@ -260,8 +341,87 @@ for l=1:size(light_conditions,1)
     end
     title(strcat(light_conditions{l}, ' at night'))
     legend(Leg);
+    xticks([1:1:5]);
+    ylim([0 14]);
     box off;
     clear Leg
+end
+print(gcf, fullfile(topfolder, 'NightActivityValues'), '-depsc');
+savefig(gcf, fullfile(topfolder, 'NightActivityValues.fig'));
+saveas(gcf, fullfile(topfolder, 'NightActivityValues'), 'tiff');
+
+%stats on the activity values
+clear P
+for l=1:size(light_conditions,2)
+    genoNames = fieldnames(DActValues.(light_conditions{l}));
+    genoNames = genoNames(~cellfun(@isempty,regexp(genoNames,'WT')));
+    temp = 1;
+    genos=[];
+    genos2 =[];
+    for g=1:size(genoNames,1)
+        genos(1:size(DActValues.(light_conditions{l}).(genoNames{g}),1)) = temp
+        genos2 = [genos2; genos'];
+        temp = temp+1
+        clear genos
+    end
+
+        dataMat =[]
+        for s=1:nstates
+            data = []
+            for g=1:size(genoNames,1)
+                data = [data DActValues.(light_conditions{l}).(genoNames{g})(:,s)']
+            end
+            dataMat = [dataMat; data];
+        
+            [p,tbl,stats] = anovan(dataMat(s,:), genos2,'display', 'off');
+            P{l,s}=multcompare(stats);
+            
+        end
+end
+
+%save this output to an excel sheet
+for l = 1:size(P,1)
+    for s =1:nstates
+        xlswrite(fullfile(topfolder, strcat(light_conditions{l}, 'DActStats.xls')),...
+            P{l,s}, s);
+    end
+end
+
+%stats on the night activity values
+clear P
+for l=1:size(light_conditions,2)
+    genoNames = fieldnames(NActValues.(light_conditions{l}));
+    genoNames = genoNames(~cellfun(@isempty,regexp(genoNames,'WT')));
+    temp = 1;
+    genos=[];
+    genos2 =[];
+    for g=1:size(genoNames,1)
+        genos(1:size(NActValues.(light_conditions{l}).(genoNames{g}),1)) = temp
+        genos2 = [genos2; genos'];
+        temp = temp+1
+        clear genos
+    end
+
+        dataMat =[]
+        for s=1:nstates
+            data = []
+            for g=1:size(genoNames,1)
+                data = [data NActValues.(light_conditions{l}).(genoNames{g})(:,s)']
+            end
+            dataMat = [dataMat; data];
+        
+            [p,tbl,stats] = anovan(dataMat(s,:), genos2,'display', 'off');
+            P{l,s}=multcompare(stats);
+            
+        end
+end
+
+%save this output to an excel sheet
+for l = 1:size(P,1)
+    for s =1:nstates
+        xlswrite(fullfile(topfolder, strcat(light_conditions{l}, 'NActStats.xls')),...
+            P{l,s}, s);
+    end
 end
 
 %%
