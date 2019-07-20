@@ -25,6 +25,9 @@ Summary (foldir, saveDiri8Vir, namesi8Vir, ControlPosi8Vir, cmapi8Vir)
 %Activity summary
 Summary_Act(foldir, saveDiri8Vir, namesi8Vir, ControlPosi8Vir, cmapi8Vir)
 
+%LMM export for Jason
+LMM_export (foldir, saveDiri8Vir, namesi8Vir);
+
 %State transitions
 StateTransitions (foldir, saveDiri8Vir, namesi8Vir, ControlPosi8Vir, cmapi8Vir, ymaxD, ymaxN)
 

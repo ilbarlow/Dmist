@@ -22,6 +22,9 @@ Summary (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 %Activity summary
 Summary_Act(foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 
+%LMM export for Jason
+LMM_export (foldir, saveDirVir, namesVir);
+
 %State transitions
 StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir, ymaxD, ymaxN)
 
@@ -46,6 +49,9 @@ Summary (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 %Activity summary
 Summary_Act(foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 
+%LMM export for Jason
+LMM_export (foldir, saveDirVir, namesVir);
+
 %State transitions
 StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir, ymaxD, ymaxN)
 
@@ -67,6 +73,9 @@ Summary (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
 
 %Activity summary
 Summary_Act(foldir, saveDirVir, namesVir, ControlPosVir, cmapVir)
+
+%LMM export for Jason
+LMM_export (foldir, saveDirVir, namesVir);
 
 %State transitions
 StateTransitions (foldir, saveDirVir, namesVir, ControlPosVir, cmapVir, ymaxD, ymaxN)
