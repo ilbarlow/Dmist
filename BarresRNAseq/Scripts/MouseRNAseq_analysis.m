@@ -134,6 +134,20 @@ for c = 1:size(neuron,2)
     clear zzz
 end
 
+
+% find rank correlation of Atp1a3 and fxyd1
+nak_candidates = {'Fxyd1', 'Atp1a3'};
+for n = 1:size(nak_candidates,2)
+    zzz=strfind(sortedNames, nak_candidates{1,n});
+    for i=1:size(zzz,1)
+       if zzz{i} ==1
+            nak_candidates{2,n}(1) = i;
+           nak_candidates{2,n}(2)= IX(i);
+       end
+    end
+end
+
+
 %% plot bar chart of average values
 
 %make cell array with just the marker rank correlation score and locations

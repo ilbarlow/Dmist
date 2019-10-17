@@ -1,0 +1,38 @@
+Genotype 1	Genotype 2	Genotype 4	Genotype 5	Genotype 6	Genotype 7	Genotype 8
+atp1a3aWT-atp1a3bWT	atp1a3aWT-atp1a3bHet	atp1a3aHet-atp1a3bWT	atp1a3aHet-atp1a3bHet	atp1a3aHet-atp1a3bHom	atp1a3aHom-atp1a3bWT	atp1a3aHom-atp1a3bHet
+2	5	18	1	59	16	3
+4	7	22	8	71	69	6
+15	17	23	9			11
+21	30	33	10			13
+34	43	41	12			25
+39	44	50	14			31
+	45	55	19			46
+	61	60	20			47
+	64	65	24			54
+	74	67	26			62
+	82	78	27			70
+	89	83	28			73
+		85	29			76
+		88	32			79
+			37			86
+			38			90
+			40			
+			42			
+			48			
+			49			
+			51			
+			52			
+			53			
+			56			
+			57			
+			58			
+			63			
+			66			
+			68			
+			72			
+			75			
+			77			
+			80			
+			81			
+			84			
+			87			

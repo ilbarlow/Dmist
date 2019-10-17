@@ -134,22 +134,22 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
     for e=1:size(sleepStructure,2) %every experiment
         %when 0s get logged they become infs, so first need to replace zeros
         %with v v low value - 0.000001
-       sleepD{e}(sleepD{e}==0) = 0.001;
-       sleepN{e}(sleepN{e}==0) = 0.001;
-       sleepBoutD{e}(sleepBoutD{e}==0) = 0.001;
-       sleepBoutN{e}(sleepBoutN{e}==0) = 0.001;
-       wActivityD{e}(wActivityD{e}==0) = 0.001;
-       wActivityN{e}(wActivityN{e}==0) = 0.001;
+%        sleepD{e}(sleepD{e}==0) = 0.001;
+%        sleepN{e}(sleepN{e}==0) = 0.001;
+%        sleepBoutD{e}(sleepBoutD{e}==0) = 0.001;
+%        sleepBoutN{e}(sleepBoutN{e}==0) = 0.001;
+%        wActivityD{e}(wActivityD{e}==0) = 0.001;
+%        wActivityN{e}(wActivityN{e}==0) = 0.001;
 
        %now normalise
-       norm_sleep_d{e}=log(sleepD{e}); %day sleep
-       norm_sleep_n{e}=log(sleepN{e});
-       norm_sleeplength_d{e}=log(sleepLengthD{e});
-       norm_sleeplength_n{e}=log(sleepLengthN{e});
-       norm_sleepbout_d{e}=log(sleepBoutD{e});
-       norm_sleepbout_n{e}=log(sleepBoutN{e});
-       norm_wactivity_d{e} = log(wActivityD{e});
-       norm_wactivity_n{e}=log(wActivityN{e});
+       norm_sleep_d{e}=log(sleepD{e}+0.00001); %day sleep
+       norm_sleep_n{e}=log(sleepN{e}+0.00001);
+       norm_sleeplength_d{e}=log(sleepLengthD{e}+0.00001);
+       norm_sleeplength_n{e}=log(sleepLengthN{e}+0.00001);
+       norm_sleepbout_d{e}=log(sleepBoutD{e}+0.00001);
+       norm_sleepbout_n{e}=log(sleepBoutN{e}+0.00001);
+       norm_wactivity_d{e} = log(wActivityD{e}+0.00001);
+       norm_wactivity_n{e}=log(wActivityN{e}+0.00001);
     end
 
     %now do the scaling - make new cell array Scaled2
@@ -191,7 +191,7 @@ function Summary (folder, saveDir, names, ControlPos, cmap)
        finalScaled{e,3} = Scaled2{e,3}; %day sleep bout
        finalScaled{e,4} = Scaled{e,4}; %night sleep bout
        finalScaled{e,5} = Scaled2{e,5}; %day sleep bout length
-       finalScaled{e,6} = Scaled2{e,6}; %night sleep bout length
+       finalScaled{e,6} = Scaled{e,6}; %night sleep bout length
        finalScaled{e,7} = Scaled{e,7}; %day waking activity
        finalScaled{e,8} = Scaled{e,8}; %night waking activity
     end

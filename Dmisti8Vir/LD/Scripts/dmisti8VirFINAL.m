@@ -18,7 +18,6 @@ ymaxD = [0.6 0.6 0.6 0.6 0.6];
 
 ymaxN = [0.8 0.6 0.6 0.6 0.6];
 
-
 %Summary figures
 Summary (foldir, saveDiri8Vir, namesi8Vir, ControlPosi8Vir, cmapi8Vir)
 
