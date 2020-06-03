@@ -164,7 +164,7 @@ for j = 1:size(sleepStructure,2) %each experiment
    ax.XTick = LB(:,j);
    ax.XTickLabel = {'' '14' '0' '14' '0' '14' '0'};
    set(gca, 'Fontsize', 16);
-   ylim ([0 20])
+   ylim ([0 15])
    xlim([LB(3,j) LB(7,j)])
    xlabel ('Zeitgeber time (hours)', 'Fontsize', 18);
    ylabel ('Waking Activity (sec min^{-1}/10mins)', 'Fontsize', 18)

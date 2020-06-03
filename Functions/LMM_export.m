@@ -51,16 +51,16 @@ function LMM_export(folder, saveDir, names)
     end
 
     %set experiment grouping variable
-    nsExp = cumsum(max(nFish,[],2)); %count up the number of rows for each experiment
-    nsExp = [1; nsExp]; %add in one to make concatenating easier
+    nsExp = cumsum(ns*size(nFish,2)); %count up the number of rows for each experiment
+    nsExp = [0; nsExp]; %add in one to make concatenating easier
     
     %set final experiment grouping variable
     for e=1:size(nsExp,1)-1
-       exp(nsExp(e): nsExp(e+1))=e;
-       box(nsExp(e):nsExp(e+1)) = str2num(sleepStructure(e).geno.box);
+       exp(nsExp(e)+1: nsExp(e+1),1)=e;
+       box(nsExp(e)+1:nsExp(e+1),1) = str2num(sleepStructure(e).geno.box);
     end
-    exp = repmat (exp, 1, size(nFish,2))'; %repeat by number of conditions
-    box = repmat(box,1, size(nFish,2))';
+%     exp = repmat (exp, 1, size(nFish,2))'; %repeat by number of conditions
+%     box = repmat(box,1, size(nFish,2))';
     
     %load the data
     sleepD = [];
